@@ -242,7 +242,7 @@ export function IssuesPage() {
                       <div key={inv.id} className="rounded-lg border border-border bg-surface p-4 flex gap-4 transition hover:border-accent/30">
                         {inv.image_url ? (
                           <img 
-                            src={inv.image_url.startsWith('http') ? inv.image_url : `http://localhost:8000${inv.image_url}`} 
+                            src={inv.image_url.startsWith('http') ? inv.image_url : `/api${inv.image_url}`}
                             alt={inv.name} 
                             className="w-16 h-16 rounded-md object-cover bg-canvas-soft border border-border flex-shrink-0"
                             onError={(e) => { (e.target as HTMLImageElement).src = 'https://via.placeholder.com/150?text=Rasm+yo\'q' }}

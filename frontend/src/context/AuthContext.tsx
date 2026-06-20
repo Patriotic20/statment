@@ -21,7 +21,10 @@ interface AuthContextValue {
 const AuthContext = createContext<AuthContextValue | null>(null)
 
 const TOKEN_KEY = 'rrtm_token'
-const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+// По умолчанию — относительный путь: запросы идут на тот же origin и
+// проксируются nginx (`/api/` → backend:8000). Работает на любом хосте/порте.
+// Для локального `npm run dev` переопределяется через VITE_API_URL в .env.
+const BASE_URL = import.meta.env.VITE_API_URL || '/api'
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState(() => localStorage.getItem(TOKEN_KEY) || '')

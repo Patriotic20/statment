@@ -1,0 +1,86 @@
+# Production-стек для сервера. Запуск:
+#   docker compose -f docker-compose.prod.yml up -d --build
+# Наружу публикуется ТОЛЬКО фронтенд (8080). db/rabbitmq/backend доступны лишь
+# по внутренней сети — фронтовый nginx проксирует /api/ и /ws/ на backend:8000.
+name: rrtm
+
+services:
+  db:
+    image: postgres:17
+    container_name: rrtm-db
+    environment:
+      POSTGRES_USER: rrtm
+      POSTGRES_PASSWORD: rrtm
+      POSTGRES_DB: rrtm
+    volumes:
+      - rrtm_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rrtm -d rrtm"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rrtm-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: rrtm
+      RABBITMQ_DEFAULT_PASS: rrtm
+    volumes:
+      - rrtm_rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: ./backend
+    container_name: rrtm-backend
+    environment:
+      DATABASE_URL: postgresql+asyncpg://rrtm:rrtm@db:5432/rrtm
+      RABBITMQ_URL: amqp://rrtm:rrtm@rabbitmq:5672/
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+    depends_on:
+      db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    command: >
+      sh -c "uv run alembic upgrade head &&
+             uv run uvicorn main:app --host 0.0.0.0 --port 8000"
+
+  worker-bot:
+    build: ./worker-bot
+    container_name: rrtm-worker-bot
+    environment:
+      BOT_TOKEN: ${WORKER_BOT_TOKEN}
+      RABBITMQ_URL: amqp://rrtm:rrtm@rabbitmq:5672/
+      API_BASE_URL: http://backend:8000
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      backend:
+        condition: service_started
+
+  client-bot:
+    build: ./client-bot
+    container_name: rrtm-client-bot
+    environment:
+      BOT_TOKEN: ${CLIENT_BOT_TOKEN}
+      API_BASE_URL: http://backend:8000
+    depends_on:
+      backend:
+        condition: service_started
+
+  frontend:
+    build: ./frontend
+    container_name: rrtm-frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+
+volumes:
+  rrtm_pgdata:
+  rrtm_rabbitmq_data:

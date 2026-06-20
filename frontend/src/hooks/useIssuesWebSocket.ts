@@ -8,7 +8,11 @@ export function useIssuesWebSocket(
 ) {
   useEffect(() => {
     if (!token) return
-    const wsBase = import.meta.env.VITE_WS_URL ?? 'ws://localhost:8000'
+    // По умолчанию — same-origin WS (за nginx-проксей `/ws/`). Работает на любом
+    // хосте/порте и под https (wss). Для dev переопределяется через VITE_WS_URL.
+    const wsBase =
+      import.meta.env.VITE_WS_URL ||
+      `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}`
     const ws = new WebSocket(`${wsBase}/ws/issues?token=${token}`)
 
     ws.onmessage = (event) => {
