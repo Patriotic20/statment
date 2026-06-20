@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    @apply bg-canvas-warm font-sans text-ink;
+  }
+
+  h1,
+  h2 {
+    @apply font-serif;
+  }
+}
+
+@layer components {
+  /* Скелет-плейсхолдер: мягкий мерцающий градиент */
+  .skeleton {
+    background-image: linear-gradient(
+      90deg,
+      #ededeb 0px,
+      #f4f3f1 200px,
+      #ededeb 400px
+    );
+    background-size: 800px 100%;
+    @apply animate-shimmer rounded-input;
+  }
+}
