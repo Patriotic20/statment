@@ -26,7 +26,7 @@ const FLOOR_LABEL: Record<Floor, string> = {
 export function RoomDetailPage() {
   const { roomId } = useParams()
   const rid = Number(roomId)
-  const { api } = useAuth()
+  const { api, baseUrl } = useAuth()
   const toast = useToast()
 
   const [room, setRoom] = useState<Room | null>(null)
@@ -42,6 +42,7 @@ export function RoomDetailPage() {
     employee_id: '',
     ip_address: '',
     code: '',
+    mac_address: '',
     image_url: '',
     device_type: '',
   })
@@ -56,6 +57,7 @@ export function RoomDetailPage() {
     device_type: '',
     ip_address: '',
     code: '',
+    mac_address: '',
   })
   const [deletingEmp, setDeletingEmp] = useState<Employee | null>(null)
   const [deletingInv, setDeletingInv] = useState<Inventory | null>(null)
@@ -167,12 +169,13 @@ export function RoomDetailPage() {
       employee_id: Number(inv.employee_id),
       ip_address: inv.ip_address.trim() || undefined,
       code: inv.code.trim() || undefined,
+      mac_address: inv.mac_address.trim() || undefined,
       image_url: inv.image_url.trim() || undefined,
       device_type:
         (inv.device_type as 'computer' | 'network' | 'printer') || undefined,
     })
     if (r.ok) {
-      setInv({ name: '', employee_id: '', ip_address: '', code: '', image_url: '', device_type: '' })
+      setInv({ name: '', employee_id: '', ip_address: '', code: '', mac_address: '', image_url: '', device_type: '' })
       toast.success('Inventar qo\'shildi')
       load()
     } else toast.error(errorMessage(r))
@@ -185,6 +188,7 @@ export function RoomDetailPage() {
       device_type: i.device_type ?? '',
       ip_address: i.ip_address ?? '',
       code: i.code ?? '',
+      mac_address: i.mac_address ?? '',
     })
     setEditingInv(i)
   }
@@ -203,6 +207,7 @@ export function RoomDetailPage() {
       device_type: (invForm.device_type as 'computer' | 'network' | 'printer') || undefined,
       ip_address: invForm.ip_address.trim() || undefined,
       code: invForm.code.trim() || undefined,
+      mac_address: invForm.mac_address.trim() || undefined,
     })
     setBusy(false)
     if (r.ok) {
@@ -362,6 +367,14 @@ export function RoomDetailPage() {
                   />
                 </Field>
               </div>
+              <Field label="MAC-manzil (ixtiyoriy)">
+                <Input
+                  value={inv.mac_address}
+                  onChange={(e) => setInv({ ...inv, mac_address: e.target.value })}
+                  placeholder="AA:BB:CC:DD:EE:FF"
+                  className="font-mono"
+                />
+              </Field>
               <Button
                 type="submit"
                 icon={<Plus size={16} />}
@@ -386,7 +399,19 @@ export function RoomDetailPage() {
                 .map((i) => (
                 <Card key={i.id} className="py-3">
                   <div className="flex items-center justify-between gap-2">
-                    <div className="truncate font-medium text-ink">{i.name}</div>
+                    <div className="flex min-w-0 items-center gap-2">
+                      {i.image_url && (
+                        // Фото приходит относительным путём (/media/...), его отдаёт бэкенд.
+                        <a href={baseUrl + i.image_url} target="_blank" rel="noreferrer">
+                          <img
+                            src={baseUrl + i.image_url}
+                            alt={i.name}
+                            className="h-10 w-10 shrink-0 rounded object-cover"
+                          />
+                        </a>
+                      )}
+                      <div className="truncate font-medium text-ink">{i.name}</div>
+                    </div>
                     <div className="flex items-center gap-2">
                       {i.device_type && (
                         <Badge tone="neutral">
@@ -404,6 +429,12 @@ export function RoomDetailPage() {
                       <>
                         <span>·</span>
                         <span className="font-mono">{i.ip_address}</span>
+                      </>
+                    )}
+                    {i.mac_address && (
+                      <>
+                        <span>·</span>
+                        <span className="font-mono">{i.mac_address}</span>
                       </>
                     )}
                     {empById.get(i.employee_id) && (
@@ -493,6 +524,14 @@ export function RoomDetailPage() {
               />
             </Field>
           </div>
+          <Field label="MAC-manzil (ixtiyoriy)">
+            <Input
+              value={invForm.mac_address}
+              onChange={(e) => setInvForm({ ...invForm, mac_address: e.target.value })}
+              placeholder="AA:BB:CC:DD:EE:FF"
+              className="font-mono"
+            />
+          </Field>
           <div className="mt-2 flex justify-end gap-2">
             <Button type="button" variant="secondary" onClick={() => setEditingInv(null)} disabled={busy}>
               Bekor qilish

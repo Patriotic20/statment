@@ -1,0 +1,17 @@
+# Контекст сборки — корень репозитория (так собирает Railway), поэтому важно
+# не тащить в него тяжёлое и секретное.
+.git
+.gitignore
+**/.env
+**/.env.*
+!**/.env.example
+**/node_modules
+**/.venv
+**/__pycache__
+**/*.pyc
+frontend/dist
+.claude
+.playwright-mcp
+*.md
+!backend/README.md
+!worker-bot/README.md

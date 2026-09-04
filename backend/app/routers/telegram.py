@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException, status
 
 from app.core.deps import SessionDep
+from app.core.security import create_access_token
 from app.repositories.employees import employee_repo
 from app.repositories.issues import issue_repo
 from app.repositories.telegram_clients import telegram_client_repo
@@ -57,7 +58,12 @@ async def worker_auth(payload: WorkerAuthRequest, session: SessionDep) -> Worker
     await user_repo.link_telegram_id(session, user.id, payload.telegram_id)
     # Факультет уже назначен админом в users.faculty_id — отдаём его, чтобы бот
     # не спрашивал факультет повторно.
-    return WorkerAuthResponse(ok=True, user_id=user.id, faculty_id=user.faculty_id)
+    return WorkerAuthResponse(
+        ok=True,
+        user_id=user.id,
+        faculty_id=user.faculty_id,
+        access_token=create_access_token(user.id),
+    )
 
 
 @router.post("/worker/faculty")

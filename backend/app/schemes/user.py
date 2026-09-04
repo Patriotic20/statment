@@ -31,6 +31,9 @@ class WorkerAuthResponse(BaseModel):
     ok: bool
     user_id: int
     faculty_id: Optional[int] = None
+    # JWT воркера: с ним бот ходит в защищённые /rooms, /employees, /inventory
+    # от имени этого пользователя.
+    access_token: Optional[str] = None
 
 
 class WorkerTelegramRead(BaseModel):

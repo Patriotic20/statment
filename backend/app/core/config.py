@@ -17,6 +17,11 @@ class Settings(BaseSettings):
     ADMIN_USERNAME: str = "admin"
     ADMIN_PASSWORD: str = "admin123"
 
+    # Загруженные файлы (фотографии оборудования). В контейнере каталог
+    # смонтирован как volume, иначе снимки исчезают при пересборке образа.
+    MEDIA_ROOT: str = "media"
+    MAX_UPLOAD_MB: int = 10
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",

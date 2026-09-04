@@ -6,6 +6,10 @@ from config import settings
 from consumer import start_consumer
 from handlers.start import router as start_router
 from handlers.issues import router as issues_router
+from handlers.admin_common import router as admin_common_router
+from handlers.admin_rooms import router as admin_rooms_router
+from handlers.admin_employees import router as admin_employees_router
+from handlers.admin_inventory import router as admin_inventory_router
 
 
 async def main():
@@ -18,6 +22,10 @@ async def main():
     dp = Dispatcher(storage=MemoryStorage())
     dp.include_router(start_router)
     dp.include_router(issues_router)
+    dp.include_router(admin_common_router)
+    dp.include_router(admin_rooms_router)
+    dp.include_router(admin_employees_router)
+    dp.include_router(admin_inventory_router)
 
     await bot.delete_webhook(drop_pending_updates=True)
     logging.info("Starting Worker Bot...")

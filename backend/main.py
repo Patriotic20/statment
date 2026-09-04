@@ -1,7 +1,10 @@
 import logging
 from contextlib import asynccontextmanager
+from pathlib import Path
+
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 # Import models so SQLAlchemy metadata is fully populated.
 import app.models  # noqa: F401
@@ -54,6 +57,12 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Фотографии оборудования. Каталог создаём заранее — StaticFiles требует,
+# чтобы он существовал на момент монтирования.
+_media_root = Path(settings.MEDIA_ROOT)
+_media_root.mkdir(parents=True, exist_ok=True)
+app.mount("/media", StaticFiles(directory=_media_root), name="media")
 
 app.include_router(auth.router)
 app.include_router(faculty.router)

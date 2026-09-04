@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.core.deps import SessionDep, get_current_user
+from app.core.errors import unique_violation_as_400
 from app.repositories.employees import employee_repo
 from app.repositories.rooms import room_repo
 from app.schemes.employees import EmployeeCreate, EmployeeRead, EmployeeUpdate
@@ -10,6 +11,9 @@ router = APIRouter(
     tags=["employees"],
     dependencies=[Depends(get_current_user)],
 )
+
+# Сообщения для нарушений уникальности (имена constraint'ов в PostgreSQL).
+_UNIQUE_MESSAGES = {"employees_jshir_key": "Сотрудник с таким ЖШИР уже существует"}
 
 
 async def _ensure_room_exists(session: SessionDep, room_id: int) -> None:
@@ -23,11 +27,26 @@ async def _ensure_room_exists(session: SessionDep, room_id: int) -> None:
 @router.post("/", response_model=EmployeeRead, status_code=status.HTTP_201_CREATED)
 async def create_employee(payload: EmployeeCreate, session: SessionDep) -> EmployeeRead:
     await _ensure_room_exists(session, payload.room_id)
-    return await employee_repo.create(session, payload)
+    async with unique_violation_as_400(_UNIQUE_MESSAGES, "Не удалось создать сотрудника"):
+        return await employee_repo.create(session, payload)
 
 
 @router.get("/", response_model=list[EmployeeRead])
-async def list_employees(session: SessionDep, skip: int = 0, limit: int = 100):
+async def list_employees(
+    session: SessionDep,
+    room_id: int | None = None,
+    faculty_id: int | None = None,
+    jshir: str | None = None,
+    skip: int = 0,
+    limit: int = 100,
+):
+    if jshir is not None:
+        employee = await employee_repo.get_by_jshir(session, "".join(jshir.split()))
+        return [employee] if employee is not None else []
+    if room_id is not None:
+        return await employee_repo.get_by_room(session, room_id, skip=skip, limit=limit)
+    if faculty_id is not None:
+        return await employee_repo.get_by_faculty(session, faculty_id, skip=skip, limit=limit)
     return await employee_repo.get_all(session, skip=skip, limit=limit)
 
 
@@ -45,7 +64,8 @@ async def update_employee(
 ) -> EmployeeRead:
     if payload.room_id is not None:
         await _ensure_room_exists(session, payload.room_id)
-    employee = await employee_repo.update(session, employee_id, payload)
+    async with unique_violation_as_400(_UNIQUE_MESSAGES, "Не удалось обновить сотрудника"):
+        employee = await employee_repo.update(session, employee_id, payload)
     if employee is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Employee not found")
     return employee

@@ -57,6 +57,7 @@ export function createApi(cfg: CallConfig) {
       image_url?: string
       ip_address?: string
       code?: string
+      mac_address?: string
       device_type?: 'computer' | 'network' | 'printer'
     }) => req<Inventory>('POST', '/inventory', { body }),
     updateInventory: (id: number, body: Partial<{
@@ -65,6 +66,7 @@ export function createApi(cfg: CallConfig) {
       image_url?: string
       ip_address?: string
       code?: string
+      mac_address?: string
       device_type?: 'computer' | 'network' | 'printer'
     }>) => req<Inventory>('PATCH', `/inventory/${id}`, { body }),
     deleteInventory: (id: number) => req<void>('DELETE', `/inventory/${id}`),

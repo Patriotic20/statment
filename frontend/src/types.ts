@@ -39,6 +39,7 @@ export interface Inventory {
   image_url: string | null
   ip_address: string | null
   code: string | null
+  mac_address: string | null
   device_type: 'computer' | 'network' | 'printer' | null
   employee_id: number
   employee?: Employee

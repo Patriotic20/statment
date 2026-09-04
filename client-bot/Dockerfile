@@ -2,10 +2,11 @@ FROM python:3.14-rc-slim
 
 WORKDIR /app
 
-COPY pyproject.toml uv.lock ./
+# Контекст сборки — корень репозитория (требование Railway для монорепо).
+COPY client-bot/pyproject.toml client-bot/uv.lock ./
 
 RUN pip install uv && uv sync --frozen --no-dev
 
-COPY . .
+COPY client-bot/ .
 
 CMD ["uv", "run", "python", "main.py"]

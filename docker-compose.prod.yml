@@ -35,7 +35,9 @@ services:
       retries: 5
 
   backend:
-    build: ./backend
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
     container_name: rrtm-backend
     environment:
       DATABASE_URL: postgresql+asyncpg://rrtm:rrtm@db:5432/rrtm
@@ -46,12 +48,16 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
+    volumes:
+      - rrtm_media:/app/media
     command: >
       sh -c "uv run alembic upgrade head &&
              uv run uvicorn main:app --host 0.0.0.0 --port 8000"
 
   worker-bot:
-    build: ./worker-bot
+    build:
+      context: .
+      dockerfile: worker-bot/Dockerfile
     container_name: rrtm-worker-bot
     environment:
       BOT_TOKEN: ${WORKER_BOT_TOKEN}
@@ -64,7 +70,9 @@ services:
         condition: service_started
 
   client-bot:
-    build: ./client-bot
+    build:
+      context: .
+      dockerfile: client-bot/Dockerfile
     container_name: rrtm-client-bot
     environment:
       BOT_TOKEN: ${CLIENT_BOT_TOKEN}
@@ -74,7 +82,9 @@ services:
         condition: service_started
 
   frontend:
-    build: ./frontend
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
     container_name: rrtm-frontend
     ports:
       - "8080:80"
@@ -84,3 +94,4 @@ services:
 volumes:
   rrtm_pgdata:
   rrtm_rabbitmq_data:
+  rrtm_media:

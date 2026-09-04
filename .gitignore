@@ -43,6 +43,9 @@ pnpm-debug.log*
 *.swo
 *~
 
+# ── Локальные оверрайды docker compose (порты под конкретную машину) ──────
+docker-compose.override.yml
+
 # ── Claude Code (keep shared settings.json, ignore local overrides) ───────
 .claude/settings.local.json
 

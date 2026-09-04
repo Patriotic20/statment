@@ -1,0 +1,40 @@
+# Шаблон: nginx-образ прогоняет его через envsubst при старте.
+# ${PORT}             — порт, который слушает контейнер (Railway задаёт свой).
+# ${BACKEND_SCHEME}   — http для внутренней сети, https для публичного домена.
+# ${BACKEND_UPSTREAM} — хост:порт бэкенда (backend:8000 локально,
+#                       rrtm-backend.railway.internal:8000 в Railway).
+# ${NGINX_RESOLVER}   — DNS для ленивого резолва апстрима: nginx не падает,
+#                       если бэкенд поднимется позже.
+server {
+    listen ${PORT};
+
+    root /usr/share/nginx/html;
+    index index.html;
+
+    resolver ${NGINX_RESOLVER};
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    location /api/ {
+        set $api_upstream "${BACKEND_SCHEME}://${BACKEND_UPSTREAM}";
+        rewrite ^/api/(.*)$ /$1 break;
+        proxy_pass $api_upstream;
+        proxy_ssl_server_name on;
+        proxy_set_header Host ${BACKEND_UPSTREAM};
+        proxy_set_header X-Real-IP $remote_addr;
+        client_max_body_size 25m;
+    }
+
+    location /ws/ {
+        set $ws_upstream "${BACKEND_SCHEME}://${BACKEND_UPSTREAM}";
+        proxy_pass $ws_upstream;
+        proxy_ssl_server_name on;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "Upgrade";
+        proxy_set_header Host ${BACKEND_UPSTREAM};
+        proxy_read_timeout 3600s;
+    }
+}
