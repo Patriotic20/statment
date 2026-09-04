@@ -10,15 +10,15 @@ logger = logging.getLogger(__name__)
 router = Router()
 
 ISSUE_TYPE_LABELS = {
-    "computer": "💻 Компьютер",
-    "network": "🌐 Сеть",
-    "printer": "🖨 Принтер",
+    "computer": "💻 Kompyuter",
+    "network": "🌐 Tarmoq",
+    "printer": "🖨 Printer",
 }
 
 STATUS_LABELS = {
-    "new": "🆕 Новая",
-    "in_progress": "🔧 В работе",
-    "resolved": "✅ Решена",
+    "new": "🆕 Yangi",
+    "in_progress": "🔧 Jarayonda",
+    "resolved": "✅ Hal qilindi",
 }
 
 
@@ -29,12 +29,12 @@ async def accept_issue(callback: CallbackQuery):
     if issue:
         issue_type = ISSUE_TYPE_LABELS.get(issue["issue_type"], issue["issue_type"])
         await callback.message.edit_text(
-            f"Заявка #{issue_id} — {issue_type}\n"
-            f"Статус: {STATUS_LABELS['in_progress']}\n"
-            f"Исполнитель: {callback.from_user.full_name}",
+            f"Ariza #{issue_id} — {issue_type}\n"
+            f"Holati: {STATUS_LABELS['in_progress']}\n"
+            f"Mas'ul: {callback.from_user.full_name}",
             reply_markup=issue_actions_keyboard(issue_id),
         )
-    await callback.answer("Принято в работу!")
+    await callback.answer("Ishga olindi!")
 
 
 @router.callback_query(lambda c: c.data and c.data.startswith("resolve:"))
@@ -44,8 +44,8 @@ async def resolve_issue(callback: CallbackQuery):
     if issue:
         issue_type = ISSUE_TYPE_LABELS.get(issue["issue_type"], issue["issue_type"])
         await callback.message.edit_text(
-            f"Заявка #{issue_id} — {issue_type}\n"
-            f"Статус: {STATUS_LABELS['resolved']}\n"
-            f"Закрыл: {callback.from_user.full_name}",
+            f"Ariza #{issue_id} — {issue_type}\n"
+            f"Holati: {STATUS_LABELS['resolved']}\n"
+            f"Yakunladi: {callback.from_user.full_name}",
         )
-    await callback.answer("Заявка закрыта!")
+    await callback.answer("Ariza yakunlandi!")

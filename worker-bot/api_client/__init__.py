@@ -69,7 +69,7 @@ async def _request(
     """
     token = get_token(telegram_id)
     if not token:
-        raise ApiError("Сессия не найдена. Отправьте /start и авторизуйтесь заново.", 401)
+        raise ApiError("Sessiya topilmadi. /start yuboring va qaytadan tizimga kiring.", 401)
 
     url = f"{settings.api_base_url}{path}"
     headers = {"Authorization": f"Bearer {token}"}
@@ -87,10 +87,10 @@ async def _request(
             if response.status == 401:
                 forget_token(telegram_id)
                 raise ApiError(
-                    "Сессия истекла. Отправьте /start и авторизуйтесь заново.", 401
+                    "Sessiya muddati tugadi. /start yuboring va qaytadan tizimga kiring.", 401
                 )
             if response.status >= 400:
-                message = _extract_detail(payload, f"Ошибка сервера (HTTP {response.status})")
+                message = _extract_detail(payload, f"Server xatoligi (HTTP {response.status})")
                 logger.warning("%s %s → HTTP %s: %s", method, path, response.status, message)
                 raise ApiError(message, response.status)
             return payload

@@ -13,8 +13,8 @@ router = APIRouter(prefix="/issues", tags=["issues"])
 
 # Сообщение о том, что за сотрудником не закреплено устройство нужного типа.
 _NO_DEVICE_MESSAGE = {
-    IssueType.COMPUTER: "За вами не закреплён компьютер. Создать заявку по этому типу нельзя.",
-    IssueType.PRINTER: "За вами не закреплён принтер. Создать заявку по этому типу нельзя.",
+    IssueType.COMPUTER: "Sizga kompyuter biriktirilmagan. Bu tur bo'yicha ariza yaratib bo'lmaydi.",
+    IssueType.PRINTER: "Sizga printer biriktirilmagan. Bu tur bo'yicha ariza yaratib bo'lmaydi.",
 }
 
 
@@ -24,7 +24,7 @@ async def create_issue(payload: IssueCreate, session: SessionDep) -> IssueRead:
     if client is None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Сначала привяжите ЖШИР",
+            detail="Avval JShShIR raqamingizni bog'lang",
         )
 
     # Проверка владения: заявки по компьютеру/принтеру можно создать, только
@@ -43,8 +43,8 @@ async def create_issue(payload: IssueCreate, session: SessionDep) -> IssueRead:
     if await issue_repo.has_open_of_type(session, client.employee_id, payload.issue_type):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="У вас уже есть незакрытая заявка этого типа. "
-                   "Дождитесь её решения, прежде чем создавать новую.",
+            detail="Sizda bu turdagi yopilmagan ariza bor. Yangisini yaratishdan "
+                   "oldin uning hal bo'lishini kuting.",
         )
 
     data = {
@@ -68,7 +68,7 @@ async def list_issues(session: SessionDep, skip: int = 0, limit: int = 100):
 async def get_issue(issue_id: int, session: SessionDep) -> IssueRead:
     issue = await issue_repo.get(session, issue_id)
     if issue is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Issue not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Ariza topilmadi")
     return issue
 
 
@@ -76,7 +76,7 @@ async def get_issue(issue_id: int, session: SessionDep) -> IssueRead:
 async def update_issue(issue_id: int, payload: IssueUpdate, session: SessionDep) -> IssueRead:
     issue = await issue_repo.update(session, issue_id, payload)
     if issue is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Issue not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Ariza topilmadi")
     issue_data = IssueRead.model_validate(issue).model_dump(mode="json")
     await ws_manager.broadcast({"type": "issue_updated", "issue": issue_data})
     return issue

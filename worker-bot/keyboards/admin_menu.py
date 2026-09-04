@@ -1,9 +1,9 @@
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
 
-BTN_ROOM = "🏢 Кабинет"
-BTN_EMPLOYEE = "👤 Сотрудник"
-BTN_INVENTORY = "🖥 Оборудование"
-BTN_ASSIGN = "🔗 Назначить оборудование"
+BTN_ROOM = "🏢 Xona"
+BTN_EMPLOYEE = "👤 Xodim"
+BTN_INVENTORY = "🖥 Uskuna"
+BTN_ASSIGN = "🔗 Uskunani biriktirish"
 
 
 def admin_menu_keyboard() -> ReplyKeyboardMarkup:
@@ -15,5 +15,5 @@ def admin_menu_keyboard() -> ReplyKeyboardMarkup:
             [KeyboardButton(text=BTN_ASSIGN)],
         ],
         resize_keyboard=True,
-        input_field_placeholder="Что добавляем?",
+        input_field_placeholder="Nima qo'shamiz?",
     )

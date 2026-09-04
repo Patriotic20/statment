@@ -16,7 +16,7 @@ async def _ensure_faculty_exists(session: SessionDep, faculty_id: int) -> None:
     if await faculty_repo.get(session, faculty_id) is None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Faculty {faculty_id} does not exist",
+            detail=f"Fakultet {faculty_id} mavjud emas",
         )
 
 
@@ -42,7 +42,7 @@ async def list_rooms(
 async def get_room(room_id: int, session: SessionDep) -> RoomRead:
     room = await room_repo.get(session, room_id)
     if room is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Room not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Xona topilmadi")
     return room
 
 
@@ -52,7 +52,7 @@ async def update_room(room_id: int, payload: RoomUpdate, session: SessionDep) ->
         await _ensure_faculty_exists(session, payload.faculty_id)
     room = await room_repo.update(session, room_id, payload)
     if room is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Room not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Xona topilmadi")
     return room
 
 
@@ -60,4 +60,4 @@ async def update_room(room_id: int, payload: RoomUpdate, session: SessionDep) ->
 async def delete_room(room_id: int, session: SessionDep) -> None:
     deleted = await room_repo.delete(session, room_id)
     if not deleted:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Room not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Xona topilmadi")

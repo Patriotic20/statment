@@ -24,7 +24,7 @@ async def link_client(payload: TelegramLinkRequest, session: SessionDep) -> Tele
     if employee is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="ЖШИР не найден",
+            detail="JShShIR topilmadi",
         )
 
     existing = await telegram_client_repo.get_by_telegram_id(session, payload.telegram_id)
@@ -43,7 +43,7 @@ async def link_client(payload: TelegramLinkRequest, session: SessionDep) -> Tele
 async def get_client(telegram_id: int, session: SessionDep) -> TelegramClientRead:
     client = await telegram_client_repo.get_by_telegram_id(session, telegram_id)
     if client is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Client not linked")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Mijoz bog'lanmagan")
     return client
 
 
@@ -53,7 +53,7 @@ async def worker_auth(payload: WorkerAuthRequest, session: SessionDep) -> Worker
     if user is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Неверный логин или пароль",
+            detail="Login yoki parol noto'g'ri",
         )
     await user_repo.link_telegram_id(session, user.id, payload.telegram_id)
     # Факультет уже назначен админом в users.faculty_id — отдаём его, чтобы бот
@@ -70,7 +70,7 @@ async def worker_auth(payload: WorkerAuthRequest, session: SessionDep) -> Worker
 async def set_worker_faculty(payload: WorkerFacultyRequest, session: SessionDep):
     user = await user_repo.get_by_telegram_id(session, payload.telegram_id)
     if user is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Worker not registered")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Ishchi ro'yxatdan o'tmagan")
     await user_repo.update(session, user.id, {"faculty_id": payload.faculty_id})
     return {"ok": True}
 
@@ -88,7 +88,7 @@ async def get_workers(session: SessionDep, faculty_id: int | None = None) -> lis
 async def get_worker(telegram_id: int, session: SessionDep) -> WorkerTelegramRead:
     user = await user_repo.get_by_telegram_id(session, telegram_id)
     if user is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Worker not registered")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Ishchi ro'yxatdan o'tmagan")
     return WorkerTelegramRead(telegram_id=user.telegram_id)
 
 
@@ -96,7 +96,7 @@ async def get_worker(telegram_id: int, session: SessionDep) -> WorkerTelegramRea
 async def get_issue_faculty(issue_id: int, session: SessionDep):
     faculty_id = await issue_repo.get_faculty_id(session, issue_id)
     if faculty_id is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Issue or faculty not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Ariza yoki fakultet topilmadi")
     return {"faculty_id": faculty_id}
 
 
@@ -104,7 +104,7 @@ async def get_issue_faculty(issue_id: int, session: SessionDep):
 async def get_issue_for_worker(issue_id: int, session: SessionDep) -> IssueWorkerRead:
     detail = await issue_repo.get_detail(session, issue_id)
     if detail is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Issue not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Ariza topilmadi")
     return detail
 
 
@@ -114,7 +114,7 @@ async def update_issue_for_worker(
 ) -> IssueRead:
     issue = await issue_repo.update(session, issue_id, payload)
     if issue is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Issue not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Ariza topilmadi")
     issue_data = IssueRead.model_validate(issue).model_dump(mode="json")
     await ws_manager.broadcast({"type": "issue_updated", "issue": issue_data})
     return issue

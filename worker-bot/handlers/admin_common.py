@@ -21,7 +21,7 @@ async def ensure_authorized(message: Message) -> bool:
     if api_client.get_token(message.from_user.id) is not None:
         return True
     await message.answer(
-        "Сначала авторизуйтесь: отправьте /start и введите логин и пароль."
+        "Avval tizimga kiring: /start yuboring va login bilan parolni kiriting."
     )
     return False
 
@@ -35,7 +35,7 @@ async def run_api(message: Message, action: Awaitable[Any]) -> tuple[bool, Any]:
         return False, None
     except Exception as exc:  # сеть, таймаут и прочее
         logger.exception("Не удалось выполнить запрос к API")
-        await message.answer(f"❌ Не удалось связаться с сервером: {exc}")
+        await message.answer(f"❌ Server bilan bog'lanib bo'lmadi: {exc}")
         return False, None
 
 
@@ -74,7 +74,7 @@ async def paginate(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
     items = data.get("pick_items") or []
     if not items:
-        await callback.answer("Список устарел, начните шаг заново", show_alert=True)
+        await callback.answer("Ro'yxat eskirgan, qadamni qaytadan boshlang", show_alert=True)
         return
     extra_rows = [
         [InlineKeyboardButton(**btn) for btn in row] for row in data.get("pick_extra", [])
@@ -93,5 +93,5 @@ async def paginate(callback: CallbackQuery, state: FSMContext):
 @router.callback_query(F.data == CB_CANCEL)
 async def cancel_wizard(callback: CallbackQuery, state: FSMContext):
     await state.clear()
-    await callback.message.answer("Отменено.", reply_markup=admin_menu_keyboard())
+    await callback.message.answer("Bekor qilindi.", reply_markup=admin_menu_keyboard())
     await callback.answer()

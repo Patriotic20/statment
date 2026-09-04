@@ -9,9 +9,9 @@ import api_client
 logger = logging.getLogger(__name__)
 
 ISSUE_TYPE_LABELS = {
-    "computer": "💻 Компьютер",
-    "network": "🌐 Сеть",
-    "printer": "🖨 Принтер",
+    "computer": "💻 Kompyuter",
+    "network": "🌐 Tarmoq",
+    "printer": "🖨 Printer",
 }
 
 
@@ -38,16 +38,16 @@ async def notify_workers(bot: Bot, issue_id: int):
         created_at = created_at.replace("T", " ")[:16]
 
     text = (
-        f"🔔 Новая заявка #{issue_id}\n"
-        f"Тип: {issue_type}\n"
-        f"Сотрудник: {issue['employee_name']}\n"
-        f"ЖШИР: {issue['employee_jshir']}\n"
-        f"Кабинет: {issue['room_name']} ({issue['floor']} этаж)\n"
-        f"Факультет: {issue['faculty_name']}\n"
-        f"Статус: 🆕 Новая"
+        f"🔔 Yangi ariza #{issue_id}\n"
+        f"Turi: {issue_type}\n"
+        f"Xodim: {issue['employee_name']}\n"
+        f"JShShIR: {issue['employee_jshir']}\n"
+        f"Xona: {issue['room_name']} ({issue['floor']}-qavat)\n"
+        f"Fakultet: {issue['faculty_name']}\n"
+        f"Holati: 🆕 Yangi"
     )
     if created_at:
-        text += f"\nВремя: {created_at}"
+        text += f"\nVaqt: {created_at}"
     keyboard = issue_actions_keyboard(issue_id)
 
     for telegram_id in worker_ids:

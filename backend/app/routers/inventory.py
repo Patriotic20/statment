@@ -18,7 +18,7 @@ router = APIRouter(
 )
 
 _UNIQUE_MESSAGES = {
-    "inventory_mac_address_key": "Оборудование с таким MAC-адресом уже зарегистрировано",
+    "inventory_mac_address_key": "Bunday MAC-manzilli uskuna allaqachon ro'yxatdan o'tgan",
 }
 
 # Фотографии храним только в этих форматах: то, что реально присылает Telegram,
@@ -36,14 +36,14 @@ async def _ensure_employee_exists(session: SessionDep, employee_id: int) -> None
     if await employee_repo.get(session, employee_id) is None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Employee {employee_id} does not exist",
+            detail=f"Xodim {employee_id} mavjud emas",
         )
 
 
 @router.post("/", response_model=InventoryRead, status_code=status.HTTP_201_CREATED)
 async def create_inventory(payload: InventoryCreate, session: SessionDep) -> InventoryRead:
     await _ensure_employee_exists(session, payload.employee_id)
-    async with unique_violation_as_400(_UNIQUE_MESSAGES, "Не удалось создать оборудование"):
+    async with unique_violation_as_400(_UNIQUE_MESSAGES, "Uskunani yaratib bo'lmadi"):
         return await inventory_repo.create(session, payload)
 
 
@@ -72,7 +72,7 @@ async def list_inventory(
 async def get_inventory(inventory_id: int, session: SessionDep) -> InventoryRead:
     item = await inventory_repo.get(session, inventory_id)
     if item is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Inventory not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Uskuna topilmadi")
     return item
 
 
@@ -83,20 +83,20 @@ async def upload_inventory_photo(
     """Сохраняет фотографию устройства и записывает путь к ней в image_url."""
     item = await inventory_repo.get(session, inventory_id)
     if item is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Inventory not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Uskuna topilmadi")
 
     extension = _ALLOWED_IMAGE_TYPES.get(file.content_type or "")
     if extension is None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Поддерживаются только изображения JPEG, PNG или WebP",
+            detail="Faqat JPEG, PNG yoki WebP formatidagi rasmlar qabul qilinadi",
         )
 
     content = await file.read()
     if len(content) > settings.MAX_UPLOAD_MB * 1024 * 1024:
         raise HTTPException(
             status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
-            detail=f"Файл больше {settings.MAX_UPLOAD_MB} МБ",
+            detail=f"Fayl hajmi {settings.MAX_UPLOAD_MB} MB dan oshmasligi kerak",
         )
 
     # Имя файла генерируем сами: присланному имени доверять нельзя.
@@ -116,10 +116,10 @@ async def update_inventory(
 ) -> InventoryRead:
     if payload.employee_id is not None:
         await _ensure_employee_exists(session, payload.employee_id)
-    async with unique_violation_as_400(_UNIQUE_MESSAGES, "Не удалось обновить оборудование"):
+    async with unique_violation_as_400(_UNIQUE_MESSAGES, "Uskunani yangilab bo'lmadi"):
         item = await inventory_repo.update(session, inventory_id, payload)
     if item is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Inventory not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Uskuna topilmadi")
     return item
 
 
@@ -127,4 +127,4 @@ async def update_inventory(
 async def delete_inventory(inventory_id: int, session: SessionDep) -> None:
     deleted = await inventory_repo.delete(session, inventory_id)
     if not deleted:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Inventory not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Uskuna topilmadi")

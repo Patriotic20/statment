@@ -31,7 +31,7 @@ async def begin_employee_wizard(
     """Запускает мастер. `return_to='inventory'` — вернуться в мастер оборудования."""
     await state.update_data(emp_return_to=return_to)
     await state.set_state(EmployeeStates.waiting_jshir)
-    await message.answer("ЖШИР сотрудника (14 цифр):", reply_markup=cancel_keyboard())
+    await message.answer("Xodimning JShShIR raqami (14 ta raqam):", reply_markup=cancel_keyboard())
 
 
 @router.message(F.text == BTN_EMPLOYEE)
@@ -46,7 +46,7 @@ async def start_employee_wizard(message: Message, state: FSMContext):
 async def employee_jshir(message: Message, state: FSMContext):
     jshir = _clean_jshir(message.text)
     if jshir is None:
-        await message.answer("ЖШИР должен состоять ровно из 14 цифр. Попробуйте ещё раз:")
+        await message.answer("JShShIR aynan 14 ta raqamdan iborat bo'lishi kerak. Qaytadan kiriting:")
         return
 
     ok, existing = await run_api(
@@ -57,14 +57,14 @@ async def employee_jshir(message: Message, state: FSMContext):
     if existing is not None:
         await state.clear()
         await message.answer(
-            f"Такой сотрудник уже есть: {existing['full_name']} (id {existing['id']}).",
+            f"Bunday xodim allaqachon bor: {existing['full_name']} (id {existing['id']}).",
             reply_markup=admin_menu_keyboard(),
         )
         return
 
     await state.update_data(emp_jshir=jshir)
     await state.set_state(EmployeeStates.waiting_full_name)
-    await message.answer("ФИО сотрудника:", reply_markup=cancel_keyboard())
+    await message.answer("Xodimning F.I.Sh.:", reply_markup=cancel_keyboard())
 
 
 @router.message(EmployeeStates.waiting_full_name, F.text)
@@ -83,8 +83,8 @@ async def employee_full_name(message: Message, state: FSMContext):
         return
     await send_picker(
         message, state, "faculty", faculties,
-        prompt="Выберите факультет:",
-        empty_text="Факультетов пока нет — их создаёт администратор в веб-панели.",
+        prompt="Fakultetni tanlang:",
+        empty_text="Hozircha fakultetlar yo'q — ularni administrator veb-panelda yaratadi.",
     )
 
 
@@ -101,8 +101,8 @@ async def employee_faculty(callback: CallbackQuery, state: FSMContext):
         return
     await send_picker(
         callback.message, state, "room", rooms,
-        prompt="Выберите кабинет:",
-        empty_text="В этом факультете ещё нет кабинетов — сначала добавьте кабинет.",
+        prompt="Xonani tanlang:",
+        empty_text="Bu fakultetda hali xona yo'q — avval xona qo'shing.",
     )
 
 
@@ -129,12 +129,12 @@ async def _create_and_continue(
         return
 
     if data.get("emp_return_to") == "inventory":
-        await message.answer(f"✅ Сотрудник {employee['full_name']} создан. Завершаю оборудование…")
+        await message.answer(f"✅ {employee['full_name']} xodimi yaratildi. Uskunani yakunlayapman…")
         await finalize_inventory(message, state, telegram_id, employee["id"])
         return
 
     await state.clear()
     await message.answer(
-        f"✅ Сотрудник {employee['full_name']} добавлен (ЖШИР {employee['jshir']}, id {employee['id']}).",
+        f"✅ {employee['full_name']} xodimi qo'shildi (JShShIR {employee['jshir']}, id {employee['id']}).",
         reply_markup=admin_menu_keyboard(),
     )

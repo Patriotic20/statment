@@ -48,5 +48,5 @@ async def update_user_faculty(
 ) -> UserRead:
     user = await user_repo.update(session, user_id, {"faculty_id": body.faculty_id})
     if user is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Foydalanuvchi topilmadi")
     return user

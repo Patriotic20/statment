@@ -22,7 +22,7 @@ async def list_faculties(session: SessionDep, skip: int = 0, limit: int = 100):
 async def get_faculty(faculty_id: int, session: SessionDep) -> FacultyRead:
     faculty = await faculty_repo.get(session, faculty_id)
     if faculty is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Faculty not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Fakultet topilmadi")
     return faculty
 
 
@@ -33,7 +33,7 @@ async def update_faculty(
 ) -> FacultyRead:
     faculty = await faculty_repo.update(session, faculty_id, payload)
     if faculty is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Faculty not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Fakultet topilmadi")
     return faculty
 
 
@@ -42,4 +42,4 @@ async def update_faculty(
 async def delete_faculty(faculty_id: int, session: SessionDep) -> None:
     deleted = await faculty_repo.delete(session, faculty_id)
     if not deleted:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Faculty not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Fakultet topilmadi")

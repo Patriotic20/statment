@@ -19,7 +19,7 @@ async def start_room_wizard(message: Message, state: FSMContext):
     await state.clear()
     await state.set_state(RoomStates.waiting_name)
     await message.answer(
-        "Название кабинета (например, «Кабинет 305»):",
+        "Xona nomi (masalan, «305-xona»):",
         reply_markup=cancel_keyboard(),
     )
 
@@ -28,7 +28,7 @@ async def start_room_wizard(message: Message, state: FSMContext):
 async def room_name(message: Message, state: FSMContext):
     await state.update_data(room_name=message.text.strip())
     await state.set_state(RoomStates.waiting_floor)
-    await message.answer("Этаж:", reply_markup=floor_keyboard())
+    await message.answer("Qavat:", reply_markup=floor_keyboard())
 
 
 @router.callback_query(RoomStates.waiting_floor, F.data.startswith("pick:floor:"))
@@ -44,8 +44,8 @@ async def room_floor(callback: CallbackQuery, state: FSMContext):
         return
     await send_picker(
         callback.message, state, "faculty", faculties,
-        prompt="Выберите факультет:",
-        empty_text="Факультетов пока нет — их создаёт администратор в веб-панели.",
+        prompt="Fakultetni tanlang:",
+        empty_text="Hozircha fakultetlar yo'q — ularni administrator veb-panelda yaratadi.",
     )
 
 
@@ -65,6 +65,6 @@ async def room_faculty(callback: CallbackQuery, state: FSMContext):
         return
     await state.clear()
     await callback.message.answer(
-        f"✅ Кабинет «{room['name']}» создан (этаж {data['room_floor']}, id {room['id']}).",
+        f"✅ «{room['name']}» xonasi yaratildi ({data['room_floor']}-qavat, id {room['id']}).",
         reply_markup=admin_menu_keyboard(),
     )

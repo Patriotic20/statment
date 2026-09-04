@@ -54,7 +54,7 @@ export async function apiRequest<T = unknown>(
     res = await fetch(url, { method, headers, body: payload })
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e)
-    onLog?.({ method, path, status: '—', text: 'NETWORK ERROR: ' + msg, ok: false })
+    onLog?.({ method, path, status: '—', text: 'TARMOQ XATOLIGI: ' + msg, ok: false })
     return { ok: false, status: '—', data: null }
   }
 
@@ -71,6 +71,6 @@ export async function apiRequest<T = unknown>(
     text = 'detail: ' + JSON.stringify((data as { detail: unknown }).detail, null, 2)
   }
 
-  onLog?.({ method, path, status: res.status, text: text || '(пусто)', ok: res.ok })
+  onLog?.({ method, path, status: res.status, text: text || '(bo\'sh)', ok: res.ok })
   return { ok: res.ok, status: res.status, data: data as T }
 }

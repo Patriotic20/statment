@@ -15,9 +15,9 @@ from keyboards.admin_menu import admin_menu_keyboard
 logger = logging.getLogger(__name__)
 
 DEVICE_LABELS = {
-    "computer": "💻 Компьютер",
-    "printer": "🖨 Принтер",
-    "network": "🌐 Сетевое устройство",
+    "computer": "💻 Kompyuter",
+    "printer": "🖨 Printer",
+    "network": "🌐 Tarmoq qurilmasi",
 }
 
 
@@ -30,7 +30,7 @@ async def _attach_photo(message: Message, telegram_id: int, inventory_id: int, d
     """
     file_id = draft.get("photo_file_id")
     if not file_id:
-        return "без фото"
+        return "rasmsiz"
 
     try:
         file = await message.bot.get_file(file_id)
@@ -41,10 +41,10 @@ async def _attach_photo(message: Message, telegram_id: int, inventory_id: int, d
         await api_client.upload_inventory_photo(
             telegram_id, inventory_id, content, f"photo.{extension}", mime
         )
-        return "фото загружено"
+        return "rasm yuklandi"
     except Exception as exc:
         logger.warning("Не удалось загрузить фото для inventory %s: %s", inventory_id, exc)
-        return f"⚠️ фото не загрузилось ({exc}) — можно добавить позже в веб-панели"
+        return f"⚠️ rasm yuklanmadi ({exc}) — keyinroq veb-panelda qo'shish mumkin"
 
 
 async def finalize_inventory(
@@ -69,9 +69,9 @@ async def finalize_inventory(
     photo_note = await _attach_photo(message, telegram_id, item["id"], data)
     await state.clear()
 
-    lines = [f"✅ Оборудование «{item['name']}» добавлено (id {item['id']}, {photo_note})."]
+    lines = [f"✅ «{item['name']}» uskunasi qo'shildi (id {item['id']}, {photo_note})."]
     if item.get("device_type"):
-        lines.append(f"Тип: {DEVICE_LABELS.get(item['device_type'], item['device_type'])}")
+        lines.append(f"Turi: {DEVICE_LABELS.get(item['device_type'], item['device_type'])}")
     if item.get("ip_address"):
         lines.append(f"IP: {item['ip_address']}")
     if item.get("mac_address"):

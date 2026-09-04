@@ -5,11 +5,11 @@ def issue_actions_keyboard(issue_id: int) -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(inline_keyboard=[
         [
             InlineKeyboardButton(
-                text="✅ Принять в работу",
+                text="✅ Ishga olish",
                 callback_data=f"accept:{issue_id}",
             ),
             InlineKeyboardButton(
-                text="🔒 Завершить",
+                text="🔒 Yakunlash",
                 callback_data=f"resolve:{issue_id}",
             ),
         ]

@@ -10,7 +10,7 @@ def _normalize_jshir(value: str) -> str:
     """Удаляет все пробелы и проверяет, что ЖШИР — ровно 14 цифр."""
     cleaned = "".join(value.split())
     if not cleaned.isdigit() or len(cleaned) != 14:
-        raise ValueError("ЖШИР должен состоять ровно из 14 цифр")
+        raise ValueError("JShShIR aynan 14 ta raqamdan iborat bo'lishi kerak")
     return cleaned
 
 

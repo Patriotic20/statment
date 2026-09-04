@@ -7,9 +7,9 @@ router = Router()
 
 # Соответствие кнопки клавиатуры типу заявки в backend.
 ISSUE_TYPES = {
-    "💻 Computer issue": "computer",
-    "🌐 Network issue": "network",
-    "🖨 Printer issue": "printer",
+    "💻 Kompyuter": "computer",
+    "🌐 Tarmoq": "network",
+    "🖨 Printer": "printer",
 }
 
 
@@ -18,12 +18,12 @@ async def handle_issue(message: Message):
     issue_type = ISSUE_TYPES[message.text]
     ok, error = await api_client.create_issue(message.from_user.id, issue_type)
     if ok:
-        await message.answer("✅ Ваша заявка принята. Специалист скоро свяжется с вами.")
+        await message.answer("✅ Arizangiz qabul qilindi. Mutaxassis tez orada bog'lanadi.")
     elif error:
         # Конкретная причина от backend (нет устройства / уже есть открытая заявка и т.п.)
         await message.answer(f"❌ {error}")
     else:
         await message.answer(
-            "❌ Не удалось отправить заявку. "
-            "Возможно, вы не идентифицированы — отправьте /start."
+            "❌ Arizani yuborib bo'lmadi. Ehtimol, shaxsingiz tasdiqlanmagan — "
+            "/start yuboring."
         )

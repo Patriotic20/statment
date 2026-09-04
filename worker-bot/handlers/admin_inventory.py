@@ -35,7 +35,7 @@ async def start_inventory_wizard(message: Message, state: FSMContext):
     await state.clear()
     await state.set_state(InventoryStates.waiting_name)
     await message.answer(
-        "Название оборудования (например, «Dell Optiplex 7090»):",
+        "Uskuna nomi (masalan, «Dell Optiplex 7090»):",
         reply_markup=cancel_keyboard(),
     )
 
@@ -44,7 +44,7 @@ async def start_inventory_wizard(message: Message, state: FSMContext):
 async def inventory_name(message: Message, state: FSMContext):
     await state.update_data(inv_name=message.text.strip())
     await state.set_state(InventoryStates.waiting_device_type)
-    await message.answer("Тип устройства:", reply_markup=device_type_keyboard())
+    await message.answer("Qurilma turi:", reply_markup=device_type_keyboard())
 
 
 @router.callback_query(InventoryStates.waiting_device_type, F.data.startswith("pick:device:"))
@@ -53,7 +53,7 @@ async def inventory_device_type(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
     await state.set_state(InventoryStates.waiting_photo)
     await callback.message.answer(
-        "Пришлите фотографию устройства (снимок или файл-изображение):",
+        "Qurilmaning rasmini yuboring (surat yoki rasm fayli):",
         reply_markup=skip_keyboard(),
     )
 
@@ -73,8 +73,8 @@ async def inventory_photo_as_file(message: Message, state: FSMContext):
     mime = message.document.mime_type or ""
     if mime not in {"image/jpeg", "image/png", "image/webp"}:
         await message.answer(
-            "Нужен файл-изображение (JPEG, PNG или WebP). Пришлите фото ещё раз "
-            "или нажмите «Пропустить».",
+            "Rasm fayli kerak (JPEG, PNG yoki WebP). Rasmni qayta yuboring "
+            "yoki «O'tkazib yuborish» tugmasini bosing.",
             reply_markup=skip_keyboard(),
         )
         return
@@ -91,7 +91,7 @@ async def inventory_photo_skip(callback: CallbackQuery, state: FSMContext):
 async def _ask_ip(message: Message, state: FSMContext) -> None:
     await state.set_state(InventoryStates.waiting_ip)
     await message.answer(
-        "IP-адрес устройства, если есть:", reply_markup=skip_keyboard()
+        "Qurilmaning IP-manzili (agar bo'lsa):", reply_markup=skip_keyboard()
     )
 
 
@@ -102,8 +102,8 @@ async def inventory_ip(message: Message, state: FSMContext):
         ipaddress.ip_address(raw)
     except ValueError:
         await message.answer(
-            "Это не похоже на IP-адрес. Введите, например, 10.0.0.5, "
-            "или нажмите «Пропустить».",
+            "Bu IP-manzilga o'xshamaydi. Masalan, 10.0.0.5 kiriting "
+            "yoki «O'tkazib yuborish»ni bosing.",
             reply_markup=skip_keyboard(),
         )
         return
@@ -120,7 +120,7 @@ async def inventory_ip_skip(callback: CallbackQuery, state: FSMContext):
 async def _ask_mac(message: Message, state: FSMContext) -> None:
     await state.set_state(InventoryStates.waiting_mac)
     await message.answer(
-        "MAC-адрес, если известен (AA:BB:CC:DD:EE:FF):", reply_markup=skip_keyboard()
+        "MAC-manzil, agar ma'lum bo'lsa (AA:BB:CC:DD:EE:FF):", reply_markup=skip_keyboard()
     )
 
 
@@ -130,8 +130,8 @@ async def inventory_mac(message: Message, state: FSMContext):
     cleaned = raw.translate(str.maketrans("", "", ":-. ")).upper()
     if len(cleaned) != 12 or any(c not in "0123456789ABCDEF" for c in cleaned):
         await message.answer(
-            "MAC должен содержать 12 шестнадцатеричных цифр. Попробуйте ещё раз "
-            "или нажмите «Пропустить».",
+            "MAC-manzil 12 ta o'n oltilik raqamdan iborat bo'ladi. Qaytadan kiriting "
+            "yoki «O'tkazib yuborish»ni bosing.",
             reply_markup=skip_keyboard(),
         )
         return
@@ -152,8 +152,8 @@ async def _ask_faculty(message: Message, state: FSMContext, telegram_id: int) ->
         return
     await send_picker(
         message, state, "faculty", faculties,
-        prompt="Факультет, где стоит устройство:",
-        empty_text="Факультетов пока нет — их создаёт администратор в веб-панели.",
+        prompt="Qurilma turgan fakultet:",
+        empty_text="Hozircha fakultetlar yo'q — ularni administrator veb-panelda yaratadi.",
     )
 
 
@@ -170,8 +170,8 @@ async def inventory_faculty(callback: CallbackQuery, state: FSMContext):
         return
     await send_picker(
         callback.message, state, "room", rooms,
-        prompt="Кабинет:",
-        empty_text="В этом факультете ещё нет кабинетов — сначала добавьте кабинет.",
+        prompt="Xona:",
+        empty_text="Bu fakultetda hali xona yo'q — avval xona qo'shing.",
     )
 
 
@@ -189,7 +189,7 @@ async def inventory_room(callback: CallbackQuery, state: FSMContext):
         return
     shown = await send_picker(
         callback.message, state, "employee", employees,
-        prompt="За кем закреплено устройство?",
+        prompt="Uskuna kimga biriktirilgan?",
         empty_text="",
         label_key="full_name",
         extra_rows=[new_employee_row()],
@@ -197,7 +197,7 @@ async def inventory_room(callback: CallbackQuery, state: FSMContext):
     if not shown:
         # В кабинете ещё нет сотрудников — сразу заводим владельца.
         await callback.message.answer(
-            "В этом кабинете пока нет сотрудников — создадим владельца."
+            "Bu xonada hali xodim yo'q — egasini yaratamiz."
         )
         await begin_employee_wizard(callback.message, state, return_to="inventory")
 
@@ -229,8 +229,8 @@ async def start_assign_wizard(message: Message, state: FSMContext):
         return
     await send_picker(
         message, state, "faculty", faculties,
-        prompt="Факультет:",
-        empty_text="Факультетов пока нет — их создаёт администратор в веб-панели.",
+        prompt="Fakultet:",
+        empty_text="Hozircha fakultetlar yo'q — ularni administrator veb-panelda yaratadi.",
     )
 
 
@@ -247,8 +247,8 @@ async def assign_faculty(callback: CallbackQuery, state: FSMContext):
         return
     await send_picker(
         callback.message, state, "room", rooms,
-        prompt="Кабинет:",
-        empty_text="В этом факультете ещё нет кабинетов.",
+        prompt="Xona:",
+        empty_text="Bu fakultetda hali xona yo'q.",
     )
 
 
@@ -273,8 +273,8 @@ async def assign_room(callback: CallbackQuery, state: FSMContext):
     ]
     await send_picker(
         callback.message, state, "item", labelled,
-        prompt="Какое устройство переназначаем?",
-        empty_text="В этом кабинете нет зарегистрированного оборудования.",
+        prompt="Qaysi uskunani qayta biriktiramiz?",
+        empty_text="Bu xonada ro'yxatga olingan uskuna yo'q.",
     )
 
 
@@ -293,8 +293,8 @@ async def assign_item(callback: CallbackQuery, state: FSMContext):
         return
     await send_picker(
         callback.message, state, "employee", employees,
-        prompt="Кому назначаем?",
-        empty_text="В этом кабинете нет сотрудников.",
+        prompt="Kimga biriktiramiz?",
+        empty_text="Bu xonada xodimlar yo'q.",
         label_key="full_name",
     )
 
@@ -315,6 +315,6 @@ async def assign_employee(callback: CallbackQuery, state: FSMContext):
         return
     await state.clear()
     await callback.message.answer(
-        f"✅ «{item['name']}» закреплено за сотрудником (id {employee_id}).",
+        f"✅ «{item['name']}» xodimga biriktirildi (id {employee_id}).",
         reply_markup=admin_menu_keyboard(),
     )

@@ -24,8 +24,8 @@ async def seed_extra() -> None:
     async with async_session_maker() as session:
         # ── Faculties ────────────────────────────────────────────────────────
         faculties = [
-            Faculty(name="Медицинский факультет"),
-            Faculty(name="Педагогический факультет"),
+            Faculty(name="Tibbiyot fakulteti"),
+            Faculty(name="Pedagogika fakulteti"),
         ]
         session.add_all(faculties)
         await session.flush()
@@ -34,10 +34,10 @@ async def seed_extra() -> None:
 
         # ── Rooms ────────────────────────────────────────────────────────────
         rooms = [
-            Room(name="Кабинет 110", floor=Floor.FIRST, faculty_id=med.id),
-            Room(name="Кабинет 210", floor=Floor.SECOND, faculty_id=med.id),
-            Room(name="Кабинет 310", floor=Floor.THIRD, faculty_id=ped.id),
-            Room(name="Кабинет 410", floor=Floor.FOURTH, faculty_id=ped.id),
+            Room(name="110-xona", floor=Floor.FIRST, faculty_id=med.id),
+            Room(name="210-xona", floor=Floor.SECOND, faculty_id=med.id),
+            Room(name="310-xona", floor=Floor.THIRD, faculty_id=ped.id),
+            Room(name="410-xona", floor=Floor.FOURTH, faculty_id=ped.id),
         ]
         session.add_all(rooms)
         await session.flush()
@@ -46,12 +46,12 @@ async def seed_extra() -> None:
 
         # ── Employees (jshir с префиксом 3..., чтобы не пересекаться с seed) ──
         employees = [
-            Employee(jshir="30000000000001", full_name="Ибрагимов Тимур Анварович", room_id=r110.id),
-            Employee(jshir="30000000000002", full_name="Садыкова Лола Рустамовна", room_id=r110.id),
-            Employee(jshir="30000000000003", full_name="Усманов Бекзод Шавкатович", room_id=r210.id),
-            Employee(jshir="30000000000004", full_name="Камилова Нигора Фарходовна", room_id=r310.id),
-            Employee(jshir="30000000000005", full_name="Тошматов Улугбек Зафарович", room_id=r410.id),
-            Employee(jshir="30000000000006", full_name="Расулова Севара Дилшодовна", room_id=r410.id),
+            Employee(jshir="30000000000001", full_name="Ibragimov Timur Anvarovich", room_id=r110.id),
+            Employee(jshir="30000000000002", full_name="Sadiqova Lola Rustamovna", room_id=r110.id),
+            Employee(jshir="30000000000003", full_name="Usmanov Bekzod Shavkatovich", room_id=r210.id),
+            Employee(jshir="30000000000004", full_name="Kamilova Nigora Farhodovna", room_id=r310.id),
+            Employee(jshir="30000000000005", full_name="Toshmatov Ulug'bek Zafarovich", room_id=r410.id),
+            Employee(jshir="30000000000006", full_name="Rasulova Sevara Dilshodovna", room_id=r410.id),
         ]
         session.add_all(employees)
         await session.flush()
@@ -84,10 +84,10 @@ async def seed_extra() -> None:
 
         # ── Telegram clients (telegram_id 200000001+) ────────────────────────
         telegram_clients = [
-            TelegramClient(telegram_id=200000001, employee_id=e1.id, telegram_username="t_ibragimov", telegram_first_name="Тимур"),
-            TelegramClient(telegram_id=200000003, employee_id=e3.id, telegram_username="b_usmanov", telegram_first_name="Бекзод"),
-            TelegramClient(telegram_id=200000004, employee_id=e4.id, telegram_username=None, telegram_first_name="Нигора"),
-            TelegramClient(telegram_id=200000006, employee_id=e6.id, telegram_username="s_rasulova", telegram_first_name="Севара"),
+            TelegramClient(telegram_id=200000001, employee_id=e1.id, telegram_username="t_ibragimov", telegram_first_name="Timur"),
+            TelegramClient(telegram_id=200000003, employee_id=e3.id, telegram_username="b_usmanov", telegram_first_name="Bekzod"),
+            TelegramClient(telegram_id=200000004, employee_id=e4.id, telegram_username=None, telegram_first_name="Nigora"),
+            TelegramClient(telegram_id=200000006, employee_id=e6.id, telegram_username="s_rasulova", telegram_first_name="Sevara"),
         ]
         session.add_all(telegram_clients)
 
@@ -104,9 +104,9 @@ async def seed_extra() -> None:
 
         # ── Statements ───────────────────────────────────────────────────────
         statements = [
-            Statement(description="Не загружается ОС после сбоя питания", user_id=worker_med.id, room_id=r110.id, employee_id=e1.id),
-            Statement(description="Принтер выдаёт ошибку драйвера", user_id=worker_med.id, room_id=r210.id, employee_id=e3.id),
-            Statement(description="Пропадает сеть в кабинете 410", user_id=worker_ped.id, room_id=r410.id, employee_id=e6.id),
+            Statement(description="Elektr o'chgandan keyin OT yuklanmayapti", user_id=worker_med.id, room_id=r110.id, employee_id=e1.id),
+            Statement(description="Printer drayver xatoligini bermoqda", user_id=worker_med.id, room_id=r210.id, employee_id=e3.id),
+            Statement(description="410-xonada tarmoq uzilib qolmoqda", user_id=worker_ped.id, room_id=r410.id, employee_id=e6.id),
         ]
         session.add_all(statements)
 
@@ -120,9 +120,9 @@ async def seed_extra() -> None:
         print("✓ Extra workers:         ", len(users))
         print("✓ Extra statements:      ", len(statements))
         print("\nNew worker logins:")
-        print("  worker_med   / worker123  (Медицинский)")
-        print("  worker_ped   / worker123  (Педагогический)")
-        print("  worker_extra / worker123  (без факультета)")
+        print("  worker_med   / worker123  (Tibbiyot fakulteti)")
+        print("  worker_ped   / worker123  (Pedagogika fakulteti)")
+        print("  worker_extra / worker123  (fakultetsiz)")
 
 
 if __name__ == "__main__":

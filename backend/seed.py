@@ -18,10 +18,10 @@ async def seed() -> None:
     async with async_session_maker() as session:
         # ── Faculties ────────────────────────────────────────────────────────
         faculties = [
-            Faculty(name="Факультет информационных технологий"),
-            Faculty(name="Факультет экономики и управления"),
-            Faculty(name="Юридический факультет"),
-            Faculty(name="Факультет иностранных языков"),
+            Faculty(name="Axborot texnologiyalari fakulteti"),
+            Faculty(name="Iqtisodiyot va boshqaruv fakulteti"),
+            Faculty(name="Yuridik fakultet"),
+            Faculty(name="Xorijiy tillar fakulteti"),
         ]
         session.add_all(faculties)
         await session.flush()
@@ -30,14 +30,14 @@ async def seed() -> None:
 
         # ── Rooms ────────────────────────────────────────────────────────────
         rooms = [
-            Room(name="Кабинет 101", floor=Floor.FIRST, faculty_id=fit.id),
-            Room(name="Кабинет 102", floor=Floor.FIRST, faculty_id=fit.id),
-            Room(name="Кабинет 103", floor=Floor.FIRST, faculty_id=fit.id),
-            Room(name="Кабинет 201", floor=Floor.SECOND, faculty_id=feu.id),
-            Room(name="Кабинет 202", floor=Floor.SECOND, faculty_id=feu.id),
-            Room(name="Кабинет 301", floor=Floor.THIRD, faculty_id=law.id),
-            Room(name="Кабинет 302", floor=Floor.THIRD, faculty_id=law.id),
-            Room(name="Кабинет 401", floor=Floor.FOURTH, faculty_id=lang.id),
+            Room(name="101-xona", floor=Floor.FIRST, faculty_id=fit.id),
+            Room(name="102-xona", floor=Floor.FIRST, faculty_id=fit.id),
+            Room(name="103-xona", floor=Floor.FIRST, faculty_id=fit.id),
+            Room(name="201-xona", floor=Floor.SECOND, faculty_id=feu.id),
+            Room(name="202-xona", floor=Floor.SECOND, faculty_id=feu.id),
+            Room(name="301-xona", floor=Floor.THIRD, faculty_id=law.id),
+            Room(name="302-xona", floor=Floor.THIRD, faculty_id=law.id),
+            Room(name="401-xona", floor=Floor.FOURTH, faculty_id=lang.id),
         ]
         session.add_all(rooms)
         await session.flush()
@@ -46,16 +46,16 @@ async def seed() -> None:
 
         # ── Employees ────────────────────────────────────────────────────────
         employees = [
-            Employee(jshir="12345678901234", full_name="Алиев Бахтиёр Рустамович", room_id=r101.id),
-            Employee(jshir="23456789012345", full_name="Каримова Дилноза Юсуповна", room_id=r101.id),
-            Employee(jshir="34567890123456", full_name="Рашидов Отабек Нормуродович", room_id=r102.id),
-            Employee(jshir="45678901234567", full_name="Хасанова Малика Азизовна", room_id=r201.id),
-            Employee(jshir="56789012345678", full_name="Юсупов Санжар Холматович", room_id=r201.id),
-            Employee(jshir="67890123456789", full_name="Назаров Фирдавс Ибрагимович", room_id=r202.id),
-            Employee(jshir="78901234567890", full_name="Турсунов Жасур Баходирович", room_id=r301.id),
-            Employee(jshir="89012345678901", full_name="Эргашева Нилуфар Алишеровна", room_id=r302.id),
-            Employee(jshir="90123456789012", full_name="Собиров Акмал Фарходович", room_id=r103.id),
-            Employee(jshir="01234567890123", full_name="Мирзаева Зухра Бахтияровна", room_id=r401.id),
+            Employee(jshir="12345678901234", full_name="Aliyev Baxtiyor Rustamovich", room_id=r101.id),
+            Employee(jshir="23456789012345", full_name="Karimova Dilnoza Yusupovna", room_id=r101.id),
+            Employee(jshir="34567890123456", full_name="Rashidov Otabek Normurodovich", room_id=r102.id),
+            Employee(jshir="45678901234567", full_name="Xasanova Malika Azizovna", room_id=r201.id),
+            Employee(jshir="56789012345678", full_name="Yusupov Sanjar Xolmatovich", room_id=r201.id),
+            Employee(jshir="67890123456789", full_name="Nazarov Firdavs Ibragimovich", room_id=r202.id),
+            Employee(jshir="78901234567890", full_name="Tursunov Jasur Bahodirovich", room_id=r301.id),
+            Employee(jshir="89012345678901", full_name="Ergasheva Nilufar Alisherovna", room_id=r302.id),
+            Employee(jshir="90123456789012", full_name="Sobirov Akmal Farhodovich", room_id=r103.id),
+            Employee(jshir="01234567890123", full_name="Mirzayeva Zuhra Baxtiyorovna", room_id=r401.id),
         ]
         session.add_all(employees)
         await session.flush()
@@ -108,21 +108,21 @@ async def seed() -> None:
 
         # ── Telegram clients ─────────────────────────────────────────────────
         telegram_clients = [
-            TelegramClient(telegram_id=100000001, employee_id=emp1.id, telegram_username="b_aliev", telegram_first_name="Бахтиёр"),
-            TelegramClient(telegram_id=100000002, employee_id=emp2.id, telegram_username="d_karimova", telegram_first_name="Дилноза"),
-            TelegramClient(telegram_id=100000003, employee_id=emp3.id, telegram_username="o_rashidov", telegram_first_name="Отабек"),
-            TelegramClient(telegram_id=100000005, employee_id=emp5.id, telegram_username=None, telegram_first_name="Санжар"),
-            TelegramClient(telegram_id=100000008, employee_id=emp8.id, telegram_username="n_ergasheva", telegram_first_name="Нилуфар"),
+            TelegramClient(telegram_id=100000001, employee_id=emp1.id, telegram_username="b_aliev", telegram_first_name="Baxtiyor"),
+            TelegramClient(telegram_id=100000002, employee_id=emp2.id, telegram_username="d_karimova", telegram_first_name="Dilnoza"),
+            TelegramClient(telegram_id=100000003, employee_id=emp3.id, telegram_username="o_rashidov", telegram_first_name="Otabek"),
+            TelegramClient(telegram_id=100000005, employee_id=emp5.id, telegram_username=None, telegram_first_name="Sanjar"),
+            TelegramClient(telegram_id=100000008, employee_id=emp8.id, telegram_username="n_ergasheva", telegram_first_name="Nilufar"),
         ]
         session.add_all(telegram_clients)
 
         # ── Statements ───────────────────────────────────────────────────────
         statements = [
-            Statement(description="Не включается компьютер после обновления", user_id=worker_fit.id, room_id=r101.id, employee_id=emp1.id),
-            Statement(description="Принтер не печатает, замятие бумаги", user_id=worker_fit.id, room_id=r101.id, employee_id=emp2.id),
-            Statement(description="Нет доступа к локальной сети", user_id=worker_feu.id, room_id=r201.id, employee_id=emp4.id),
-            Statement(description="Требуется замена картриджа", user_id=worker_law.id, room_id=r301.id, employee_id=emp7.id),
-            Statement(description="Медленная работа сети в кабинете", user_id=worker_lang.id, room_id=r401.id, employee_id=emp10.id),
+            Statement(description="Yangilanishdan keyin kompyuter yoqilmayapti", user_id=worker_fit.id, room_id=r101.id, employee_id=emp1.id),
+            Statement(description="Printer chop etmayapti, qog'oz tiqilib qoldi", user_id=worker_fit.id, room_id=r101.id, employee_id=emp2.id),
+            Statement(description="Lokal tarmoqqa ulanib bo'lmayapti", user_id=worker_feu.id, room_id=r201.id, employee_id=emp4.id),
+            Statement(description="Kartridjni almashtirish kerak", user_id=worker_law.id, room_id=r301.id, employee_id=emp7.id),
+            Statement(description="Xonada tarmoq sekin ishlayapti", user_id=worker_lang.id, room_id=r401.id, employee_id=emp10.id),
         ]
         session.add_all(statements)
 
@@ -137,10 +137,10 @@ async def seed() -> None:
         print("✓ Statements:      ", len(statements))
         print("\nLogins:")
         print("  admin       / admin123")
-        print("  worker_fit  / worker123  (ФИТ)")
-        print("  worker_feu  / worker123  (ФЭУ)")
-        print("  worker_law  / worker123  (Юридический)")
-        print("  worker_lang / worker123  (Иностранных языков)")
+        print("  worker_fit  / worker123  (AT fakulteti)")
+        print("  worker_feu  / worker123  (Iqtisodiyot fakulteti)")
+        print("  worker_law  / worker123  (Yuridik fakultet)")
+        print("  worker_lang / worker123  (Xorijiy tillar)")
 
 
 if __name__ == "__main__":

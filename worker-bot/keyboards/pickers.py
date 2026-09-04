@@ -46,7 +46,7 @@ def picker_keyboard(
     if nav:
         rows.append(nav)
     rows.extend([list(row) for row in extra_rows])
-    rows.append([InlineKeyboardButton(text="❌ Отмена", callback_data=CB_CANCEL)])
+    rows.append([InlineKeyboardButton(text="❌ Bekor qilish", callback_data=CB_CANCEL)])
     return InlineKeyboardMarkup(inline_keyboard=rows)
 
 
@@ -54,33 +54,33 @@ def floor_keyboard() -> InlineKeyboardMarkup:
     """Этажи 1–4 — ровно те значения, что допускает enum Floor на бэкенде."""
     return InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text=str(n), callback_data=f"pick:floor:{n}") for n in (1, 2, 3, 4)],
-        [InlineKeyboardButton(text="❌ Отмена", callback_data=CB_CANCEL)],
+        [InlineKeyboardButton(text="❌ Bekor qilish", callback_data=CB_CANCEL)],
     ])
 
 
 def device_type_keyboard() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="💻 Компьютер", callback_data="pick:device:computer")],
-        [InlineKeyboardButton(text="🖨 Принтер", callback_data="pick:device:printer")],
-        [InlineKeyboardButton(text="🌐 Сетевое устройство", callback_data="pick:device:network")],
-        [InlineKeyboardButton(text="❌ Отмена", callback_data=CB_CANCEL)],
+        [InlineKeyboardButton(text="💻 Kompyuter", callback_data="pick:device:computer")],
+        [InlineKeyboardButton(text="🖨 Printer", callback_data="pick:device:printer")],
+        [InlineKeyboardButton(text="🌐 Tarmoq qurilmasi", callback_data="pick:device:network")],
+        [InlineKeyboardButton(text="❌ Bekor qilish", callback_data=CB_CANCEL)],
     ])
 
 
 def skip_keyboard() -> InlineKeyboardMarkup:
     """Для необязательных шагов: фото, IP, MAC."""
     return InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="⏭ Пропустить", callback_data=CB_SKIP)],
-        [InlineKeyboardButton(text="❌ Отмена", callback_data=CB_CANCEL)],
+        [InlineKeyboardButton(text="⏭ O'tkazib yuborish", callback_data=CB_SKIP)],
+        [InlineKeyboardButton(text="❌ Bekor qilish", callback_data=CB_CANCEL)],
     ])
 
 
 def cancel_keyboard() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="❌ Отмена", callback_data=CB_CANCEL)],
+        [InlineKeyboardButton(text="❌ Bekor qilish", callback_data=CB_CANCEL)],
     ])
 
 
 def new_employee_row() -> list[InlineKeyboardButton]:
     """Кнопка «создать сотрудника прямо здесь» для мастера оборудования."""
-    return [InlineKeyboardButton(text="➕ Создать сотрудника", callback_data="wiz_new_employee")]
+    return [InlineKeyboardButton(text="➕ Yangi xodim qo'shish", callback_data="wiz_new_employee")]

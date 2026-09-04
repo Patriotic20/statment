@@ -21,31 +21,31 @@ async def cmd_start(message: Message, state: FSMContext):
     if api_client.get_token(telegram_id) is not None:
         await state.clear()
         await message.answer(
-            "Вы уже авторизованы. Вы получаете уведомления о заявках вашего "
-            "факультета и можете добавлять данные.",
+            "Siz allaqachon tizimdasiz. Fakultetingiz arizalari haqida xabar "
+            "olasiz va ma'lumot qo'sha olasiz.",
             reply_markup=admin_menu_keyboard(),
         )
         return
 
     await state.set_state(WorkerAuthStates.waiting_username)
     await message.answer(
-        "Добро пожаловать в систему RRTM!\n"
-        "Для получения заявок необходимо авторизоваться.\n\n"
-        "Введите ваш логин:"
+        "RRTM tizimiga xush kelibsiz!\n"
+        "Arizalarni olish uchun tizimga kirishingiz kerak.\n\n"
+        "Loginni kiriting:"
     )
 
 
 @router.message(Command("cancel"))
 async def cmd_cancel(message: Message, state: FSMContext):
     await state.clear()
-    await message.answer("Отменено.", reply_markup=admin_menu_keyboard())
+    await message.answer("Bekor qilindi.", reply_markup=admin_menu_keyboard())
 
 
 @router.message(WorkerAuthStates.waiting_username)
 async def process_username(message: Message, state: FSMContext):
     await state.update_data(username=message.text.strip())
     await state.set_state(WorkerAuthStates.waiting_password)
-    await message.answer("Введите пароль:")
+    await message.answer("Parolni kiriting:")
 
 
 @router.message(WorkerAuthStates.waiting_password)
@@ -59,8 +59,8 @@ async def process_password(message: Message, state: FSMContext):
     if result is None:
         await state.set_state(WorkerAuthStates.waiting_username)
         await message.answer(
-            "Неверный логин или пароль. Попробуйте снова.\n\n"
-            "Введите ваш логин:"
+            "Login yoki parol noto'g'ri. Qaytadan urinib ko'ring.\n\n"
+            "Loginni kiriting:"
         )
         return
 
@@ -70,9 +70,9 @@ async def process_password(message: Message, state: FSMContext):
     faculty_id = result.get("faculty_id")
     if not faculty_id:
         await message.answer(
-            "Авторизация успешна!\n"
-            "Факультет вам пока не назначен администратором — "
-            "уведомления начнут приходить после назначения.",
+            "Tizimga kirdingiz!\n"
+            "Sizga hali fakultet biriktirilmagan — administrator biriktirgach, "
+            "xabarlar kela boshlaydi.",
             reply_markup=admin_menu_keyboard(),
         )
         return
@@ -86,8 +86,8 @@ async def process_password(message: Message, state: FSMContext):
         (f["name"] for f in faculties if f["id"] == faculty_id), str(faculty_id)
     )
     await message.answer(
-        f"Регистрация завершена!\n"
-        f"Ваш факультет: {faculty_name}\n"
-        f"Вы будете получать уведомления о новых заявках этого факультета.",
+        f"Ro'yxatdan o'tdingiz!\n"
+        f"Fakultetingiz: {faculty_name}\n"
+        f"Shu fakultetning yangi arizalari haqida xabar olasiz.",
         reply_markup=admin_menu_keyboard(),
     )

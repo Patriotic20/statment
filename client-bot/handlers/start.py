@@ -22,16 +22,16 @@ async def cmd_start(message: Message, state: FSMContext):
     if client is not None:
         await state.clear()
         await message.answer(
-            f"Здравствуйте, {message.from_user.first_name}! 👋\n\n"
-            "Пожалуйста, выберите с чем у вас возникла проблема:",
+            f"Assalomu alaykum, {message.from_user.first_name}! 👋\n\n"
+            "Qanday muammo yuzaga kelganini tanlang:",
             reply_markup=get_issue_keyboard(),
         )
         return
 
     await state.set_state(AuthStates.waiting_for_jshir)
     await message.answer(
-        f"Здравствуйте, {message.from_user.first_name}! 👋\n\n"
-        "Для начала введите ваш ЖШИР (14 цифр):"
+        f"Assalomu alaykum, {message.from_user.first_name}! 👋\n\n"
+        "Boshlash uchun JShShIR raqamingizni kiriting (14 ta raqam):"
     )
 
 
@@ -45,12 +45,12 @@ async def process_jshir(message: Message, state: FSMContext):
         first_name=message.from_user.first_name,
     )
     if not ok:
-        await message.answer(f"❌ {error}\n\nПожалуйста, введите корректный ЖШИР ещё раз:")
+        await message.answer(f"❌ {error}\n\nIltimos, to'g'ri JShShIR raqamini qaytadan kiriting:")
         return
 
     await state.clear()
     await message.answer(
-        "✅ Вы успешно идентифицированы.\n\n"
-        "Пожалуйста, выберите с чем у вас возникла проблема:",
+        "✅ Shaxsingiz tasdiqlandi.\n\n"
+        "Qanday muammo yuzaga kelganini tanlang:",
         reply_markup=get_issue_keyboard(),
     )

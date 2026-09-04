@@ -17,7 +17,7 @@ def _normalize_mac(value: str) -> str:
     """
     cleaned = value.translate(_MAC_SEPARATORS).upper()
     if len(cleaned) != 12 or any(c not in "0123456789ABCDEF" for c in cleaned):
-        raise ValueError("MAC-адрес должен состоять из 12 шестнадцатеричных цифр")
+        raise ValueError("MAC-manzil 12 ta o'n oltilik raqamdan iborat bo'lishi kerak")
     return ":".join(cleaned[i:i + 2] for i in range(0, 12, 2))
 
 

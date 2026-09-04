@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import { useIssuesWebSocket } from '../hooks/useIssuesWebSocket'
 import { Issue, IssueStatus, Employee, Room, Inventory } from '../types'
+import { formatDateTime } from '../utils'
 import { Laptop, Network, Printer, X, MonitorSmartphone } from 'lucide-react'
 
 export function IssuesPage() {
@@ -145,7 +146,7 @@ export function IssuesPage() {
                     <td className="px-5 py-4">{getStatusLabel(issue.status)}</td>
                     <td className="px-5 py-4 truncate max-w-[200px]" title={emp?.full_name}>{emp?.full_name || `ID ${issue.employee_id}`}</td>
                     <td className="px-5 py-4">{roomName}</td>
-                    <td className="px-5 py-4 text-muted whitespace-nowrap">{new Date(issue.created_at).toLocaleString()}</td>
+                    <td className="px-5 py-4 text-muted whitespace-nowrap">{formatDateTime(issue.created_at)}</td>
                   </tr>
                 )
               })
@@ -168,7 +169,7 @@ export function IssuesPage() {
             <div className="flex items-center justify-between border-b border-border px-6 py-5 bg-canvas-soft">
               <div>
                 <h2 className="text-xl font-bold">Ariza tafsilotlari #{selectedIssue.id}</h2>
-                <div className="mt-1 text-xs text-muted">{new Date(selectedIssue.created_at).toLocaleString()}</div>
+                <div className="mt-1 text-xs text-muted">{formatDateTime(selectedIssue.created_at)}</div>
               </div>
               <button 
                 onClick={() => setSelectedIssue(null)} 

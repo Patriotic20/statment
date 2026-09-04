@@ -13,21 +13,21 @@ router = APIRouter(
 )
 
 # Сообщения для нарушений уникальности (имена constraint'ов в PostgreSQL).
-_UNIQUE_MESSAGES = {"employees_jshir_key": "Сотрудник с таким ЖШИР уже существует"}
+_UNIQUE_MESSAGES = {"employees_jshir_key": "Bunday JShShIR bilan xodim allaqachon mavjud"}
 
 
 async def _ensure_room_exists(session: SessionDep, room_id: int) -> None:
     if await room_repo.get(session, room_id) is None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Room {room_id} does not exist",
+            detail=f"Xona {room_id} mavjud emas",
         )
 
 
 @router.post("/", response_model=EmployeeRead, status_code=status.HTTP_201_CREATED)
 async def create_employee(payload: EmployeeCreate, session: SessionDep) -> EmployeeRead:
     await _ensure_room_exists(session, payload.room_id)
-    async with unique_violation_as_400(_UNIQUE_MESSAGES, "Не удалось создать сотрудника"):
+    async with unique_violation_as_400(_UNIQUE_MESSAGES, "Xodimni yaratib bo'lmadi"):
         return await employee_repo.create(session, payload)
 
 
@@ -54,7 +54,7 @@ async def list_employees(
 async def get_employee(employee_id: int, session: SessionDep) -> EmployeeRead:
     employee = await employee_repo.get(session, employee_id)
     if employee is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Employee not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Xodim topilmadi")
     return employee
 
 
@@ -64,10 +64,10 @@ async def update_employee(
 ) -> EmployeeRead:
     if payload.room_id is not None:
         await _ensure_room_exists(session, payload.room_id)
-    async with unique_violation_as_400(_UNIQUE_MESSAGES, "Не удалось обновить сотрудника"):
+    async with unique_violation_as_400(_UNIQUE_MESSAGES, "Xodimni yangilab bo'lmadi"):
         employee = await employee_repo.update(session, employee_id, payload)
     if employee is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Employee not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Xodim topilmadi")
     return employee
 
 
@@ -75,4 +75,4 @@ async def update_employee(
 async def delete_employee(employee_id: int, session: SessionDep) -> None:
     deleted = await employee_repo.delete(session, employee_id)
     if not deleted:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Employee not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Xodim topilmadi")

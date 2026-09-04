@@ -36,11 +36,11 @@ async def link_client(
                 return True, ""
             try:
                 data = await resp.json()
-                detail = data.get("detail", "Не удалось привязать ЖШИР")
+                detail = data.get("detail", "JShShIR raqamini bog'lab bo'lmadi")
                 if isinstance(detail, list):
-                    detail = "Неверный формат ЖШИР"
+                    detail = "JShShIR formati noto'g'ri"
             except Exception:
-                detail = "Не удалось привязать ЖШИР"
+                detail = "JShShIR raqamini bog'lab bo'lmadi"
             return False, detail
 
 
