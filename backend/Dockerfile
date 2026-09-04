@@ -10,4 +10,7 @@ RUN pip install uv && uv sync --frozen --no-dev
 
 COPY backend/ .
 
-CMD ["uv", "run", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Миграции применяются самим контейнером: Railway не запускает отдельных шагов.
+# HOST/PORT берутся из окружения — Railway задаёт свой порт, а во внутренней
+# сети слушать нужно IPv6 (HOST=::). Локально по умолчанию 0.0.0.0:8000.
+CMD ["sh", "-c", "uv run alembic upgrade head && uv run uvicorn main:app --host ${HOST:-0.0.0.0} --port ${PORT:-8000}"]
