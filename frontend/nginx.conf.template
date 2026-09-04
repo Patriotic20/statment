@@ -13,6 +13,12 @@ server {
 
     resolver ${NGINX_RESOLVER};
 
+    # nginx по умолчанию достраивает относительный Location до абсолютного,
+    # подставляя свои схему и порт (http и 8080 за TLS-прокси Railway).
+    # Оставляем Location относительным — браузер сам добавит https и хост.
+    absolute_redirect off;
+    port_in_redirect off;
+
     location / {
         try_files $uri $uri/ /index.html;
     }
