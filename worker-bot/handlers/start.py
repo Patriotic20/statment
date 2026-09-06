@@ -5,7 +5,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
 import api_client
-from keyboards.admin_menu import admin_menu_keyboard
+from keyboards.admin_menu import admin_menu_keyboard, miniapp_keyboard
 from states import WorkerAuthStates
 
 logger = logging.getLogger(__name__)
@@ -25,6 +25,7 @@ async def cmd_start(message: Message, state: FSMContext):
             "olasiz va ma'lumot qo'sha olasiz.",
             reply_markup=admin_menu_keyboard(),
         )
+        await _offer_miniapp(message)
         return
 
     await state.set_state(WorkerAuthStates.waiting_username)
@@ -90,4 +91,16 @@ async def process_password(message: Message, state: FSMContext):
         f"Fakultetingiz: {faculty_name}\n"
         f"Shu fakultetning yangi arizalari haqida xabar olasiz.",
         reply_markup=admin_menu_keyboard(),
+    )
+    await _offer_miniapp(message)
+
+
+async def _offer_miniapp(message: Message) -> None:
+    """Предлагает открыть Mini App — вводить данные там удобнее, чем в чате."""
+    keyboard = miniapp_keyboard()
+    if keyboard is None:
+        return
+    await message.answer(
+        "Ma'lumot qo'shish uchun ilovani oching — u yerda qulayroq.",
+        reply_markup=keyboard,
     )

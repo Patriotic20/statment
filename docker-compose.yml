@@ -65,6 +65,8 @@ services:
       BOT_TOKEN: ${WORKER_BOT_TOKEN}
       RABBITMQ_URL: amqp://rrtm:rrtm@rabbitmq:5672/
       API_BASE_URL: http://backend:8000
+      # Адрес Mini App; пусто — кнопка приложения не показывается.
+      MINIAPP_URL: ${MINIAPP_URL:-}
     depends_on:
       rabbitmq:
         condition: service_healthy
