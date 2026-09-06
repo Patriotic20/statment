@@ -7,7 +7,7 @@ import { errorMessage } from '../utils'
 import { Card } from '../components/ui/Card'
 import { Button } from '../components/ui/Button'
 import { Badge } from '../components/ui/Badge'
-import { Field, Input, Select } from '../components/ui/Field'
+import { Field, Input, Select, PasswordInput } from '../components/ui/Field'
 import { EmptyState } from '../components/ui/EmptyState'
 
 export function WorkersPage() {
@@ -104,8 +104,7 @@ export function WorkersPage() {
           </div>
           <div className="min-w-[160px] flex-1">
             <Field label="Parol">
-              <Input
-                type="password"
+              <PasswordInput
                 value={newWorker.password}
                 onChange={(e) => setNewWorker({ ...newWorker, password: e.target.value })}
                 required

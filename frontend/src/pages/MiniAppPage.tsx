@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react
 import { Building2, LogIn, Package, UserPlus } from 'lucide-react'
 import { createApi } from '../api/endpoints'
 import { Button } from '../components/ui/Button'
-import { Field, Input, Select } from '../components/ui/Field'
+import { Field, Input, PasswordInput, Select } from '../components/ui/Field'
 import type { Employee, Faculty, Room } from '../types'
 import { errorMessage } from '../utils'
 
@@ -212,7 +212,7 @@ export function MiniAppPage() {
               onChange={(e) => setCreds({ ...creds, username: e.target.value })} />
           </Field>
           <Field label="Parol">
-            <Input type="password" value={creds.password}
+            <PasswordInput value={creds.password} autoComplete="current-password"
               onChange={(e) => setCreds({ ...creds, password: e.target.value })} />
           </Field>
           <Button type="submit" icon={<LogIn size={16} />} disabled={busy} className="w-full justify-center">
