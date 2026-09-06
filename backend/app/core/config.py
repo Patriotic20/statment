@@ -17,6 +17,10 @@ class Settings(BaseSettings):
     ADMIN_USERNAME: str = "admin"
     ADMIN_PASSWORD: str = "admin123"
 
+    # Токен бота, через которого открывается Mini App: им проверяется подпись
+    # initData. Должен совпадать с ботом, в котором зарегистрировано приложение.
+    TELEGRAM_BOT_TOKEN: str = ""
+
     # Загруженные файлы (фотографии оборудования). В контейнере каталог
     # смонтирован как volume, иначе снимки исчезают при пересборке образа.
     MEDIA_ROOT: str = "media"

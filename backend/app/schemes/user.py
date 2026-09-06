@@ -36,6 +36,25 @@ class WorkerAuthResponse(BaseModel):
     access_token: Optional[str] = None
 
 
+class MiniAppAuthRequest(BaseModel):
+    """Вход в Mini App по подписи Telegram, без логина и пароля."""
+    init_data: str
+
+
+class MiniAppLoginRequest(BaseModel):
+    """Первый вход: подпись Telegram + учётные данные, чтобы связать аккаунты."""
+    init_data: str
+    username: str
+    password: str
+
+
+class MiniAppAuthResponse(BaseModel):
+    access_token: str
+    user_id: int
+    username: str
+    faculty_id: Optional[int] = None
+
+
 class WorkerTelegramRead(BaseModel):
     telegram_id: int
 

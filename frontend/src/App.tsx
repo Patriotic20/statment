@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import { ProtectedRoute } from './components/ProtectedRoute'
+import { MiniAppPage } from './pages/MiniAppPage'
 import { Layout } from './components/Layout'
 import { LoginPage } from './pages/LoginPage'
 import { FacultiesPage } from './pages/FacultiesPage'
@@ -14,6 +15,8 @@ export default function App() {
     <AuthProvider>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
+        {/* Telegram Mini App: свой вход по подписи, поэтому вне ProtectedRoute. */}
+        <Route path="/tg" element={<MiniAppPage />} />
         <Route element={<ProtectedRoute />}>
           <Route element={<Layout />}>
             <Route path="/" element={<Navigate to="/faculties" replace />} />

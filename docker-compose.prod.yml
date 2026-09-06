@@ -43,6 +43,8 @@ services:
       DATABASE_URL: postgresql+asyncpg://rrtm:rrtm@db:5432/rrtm
       RABBITMQ_URL: amqp://rrtm:rrtm@rabbitmq:5672/
       JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      # Тем же токеном бэкенд проверяет подпись Mini App (initData).
+      TELEGRAM_BOT_TOKEN: ${WORKER_BOT_TOKEN}
     depends_on:
       db:
         condition: service_healthy

@@ -36,13 +36,15 @@ export function createApi(cfg: CallConfig) {
     createFaculty: (body: { name: string }) => req<Faculty>('POST', '/faculties', { body }),
 
     // Rooms
-    listRooms: () => req<Room[]>('GET', '/rooms'),
+    listRooms: (facultyId?: number) =>
+      req<Room[]>('GET', facultyId ? `/rooms/?faculty_id=${facultyId}` : '/rooms'),
     getRoom: (id: number | string) => req<Room>('GET', `/rooms/${id}`),
     createRoom: (body: { name: string; floor: number; faculty_id: number }) =>
       req<Room>('POST', '/rooms', { body }),
 
     // Employees
-    listEmployees: () => req<Employee[]>('GET', '/employees'),
+    listEmployees: (roomId?: number) =>
+      req<Employee[]>('GET', roomId ? `/employees/?room_id=${roomId}` : '/employees'),
     createEmployee: (body: { jshir: string; full_name: string; room_id: number }) =>
       req<Employee>('POST', '/employees', { body }),
     updateEmployee: (id: number, body: Partial<{ jshir: string; full_name: string; room_id: number }>) =>
@@ -70,6 +72,33 @@ export function createApi(cfg: CallConfig) {
       device_type?: 'computer' | 'network' | 'printer'
     }>) => req<Inventory>('PATCH', `/inventory/${id}`, { body }),
     deleteInventory: (id: number) => req<void>('DELETE', `/inventory/${id}`),
+    /** Загрузка фотографии устройства: multipart, поэтому мимо apiRequest. */
+    uploadInventoryPhoto: async (id: number, file: File): Promise<ApiResult<Inventory>> => {
+      const form = new FormData()
+      form.append('file', file)
+      try {
+        const res = await fetch(`${cfg.baseUrl.replace(/\/+$/, '')}/inventory/${id}/photo`, {
+          method: 'POST',
+          headers: cfg.token ? { Authorization: `Bearer ${cfg.token}` } : {},
+          body: form,
+        })
+        const data = await res.json().catch(() => null)
+        return { ok: res.ok, status: res.status, data }
+      } catch {
+        return { ok: false, status: '—', data: null }
+      }
+    },
+
+    // Mini App: вход по подписи Telegram
+    miniAppAuth: (initData: string) =>
+      req<{ access_token: string; user_id: number; username: string; faculty_id: number | null }>(
+        'POST', '/telegram/miniapp/auth', { body: { init_data: initData } },
+      ),
+    miniAppLogin: (initData: string, username: string, password: string) =>
+      req<{ access_token: string; user_id: number; username: string; faculty_id: number | null }>(
+        'POST', '/telegram/miniapp/login',
+        { body: { init_data: initData, username, password } },
+      ),
 
     // Issues
     listIssues: () => req<Issue[]>('GET', '/issues'),

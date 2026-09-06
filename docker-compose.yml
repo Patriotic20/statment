@@ -41,6 +41,8 @@ services:
     environment:
       DATABASE_URL: postgresql+asyncpg://rrtm:rrtm@db:5432/rrtm
       RABBITMQ_URL: amqp://rrtm:rrtm@rabbitmq:5672/
+      # Тем же токеном бэкенд проверяет подпись Mini App (initData).
+      TELEGRAM_BOT_TOKEN: ${WORKER_BOT_TOKEN}
     ports:
       - "8000:8000"
     depends_on:
