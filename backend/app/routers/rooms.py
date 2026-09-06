@@ -30,9 +30,12 @@ async def create_room(payload: RoomCreate, session: SessionDep) -> RoomRead:
 async def list_rooms(
     session: SessionDep,
     faculty_id: int | None = None,
+    search: str | None = None,
     skip: int = 0,
     limit: int = 100,
 ):
+    if search:
+        return await room_repo.search(session, search)
     if faculty_id is not None:
         return await room_repo.get_by_faculty(session, faculty_id, skip=skip, limit=limit)
     return await room_repo.get_all(session, skip=skip, limit=limit)

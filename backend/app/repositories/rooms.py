@@ -25,4 +25,17 @@ class RoomRepository(BaseRepository[Room, RoomCreate, RoomUpdate]):
         result = await session.execute(stmt)
         return result.scalars().all()
 
+    async def search(
+        self, session: AsyncSession, query: str, limit: int = 20
+    ) -> Sequence[Room]:
+        """Ищет кабинет по части названия."""
+        stmt = (
+            select(Room)
+            .where(Room.name.ilike(f"%{query.strip()}%"))
+            .order_by(Room.floor, Room.name)
+            .limit(limit)
+        )
+        result = await session.execute(stmt)
+        return result.scalars().all()
+
 room_repo = RoomRepository()

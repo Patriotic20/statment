@@ -37,9 +37,12 @@ async def list_employees(
     room_id: int | None = None,
     faculty_id: int | None = None,
     jshir: str | None = None,
+    search: str | None = None,
     skip: int = 0,
     limit: int = 100,
 ):
+    if search:
+        return await employee_repo.search(session, search)
     if jshir is not None:
         employee = await employee_repo.get_by_jshir(session, "".join(jshir.split()))
         return [employee] if employee is not None else []

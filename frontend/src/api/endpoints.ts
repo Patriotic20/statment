@@ -38,6 +38,9 @@ export function createApi(cfg: CallConfig) {
     // Rooms
     listRooms: (facultyId?: number) =>
       req<Room[]>('GET', facultyId ? `/rooms/?faculty_id=${facultyId}` : '/rooms'),
+    /** Поиск кабинета по части названия. */
+    searchRooms: (query: string) =>
+      req<Room[]>('GET', `/rooms/?search=${encodeURIComponent(query)}`),
     getRoom: (id: number | string) => req<Room>('GET', `/rooms/${id}`),
     createRoom: (body: { name: string; floor: number; faculty_id: number }) =>
       req<Room>('POST', '/rooms', { body }),
@@ -45,6 +48,9 @@ export function createApi(cfg: CallConfig) {
     // Employees
     listEmployees: (roomId?: number) =>
       req<Employee[]>('GET', roomId ? `/employees/?room_id=${roomId}` : '/employees'),
+    /** Поиск сотрудника по части ЖШИР или ФИО. */
+    searchEmployees: (query: string) =>
+      req<Employee[]>('GET', `/employees/?search=${encodeURIComponent(query)}`),
     createEmployee: (body: { jshir: string; full_name: string; room_id: number }) =>
       req<Employee>('POST', '/employees', { body }),
     updateEmployee: (id: number, body: Partial<{ jshir: string; full_name: string; room_id: number }>) =>

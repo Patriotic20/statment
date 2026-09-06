@@ -3,7 +3,7 @@ from app.models.employees import Employee
 from app.models.rooms import Room
 from app.schemes.employees import EmployeeCreate, EmployeeUpdate
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import or_, select
 from typing import Optional, Sequence
 
 class EmployeeRepository(BaseRepository[Employee, EmployeeCreate, EmployeeUpdate]):
@@ -14,6 +14,20 @@ class EmployeeRepository(BaseRepository[Employee, EmployeeCreate, EmployeeUpdate
         stmt = select(Employee).where(Employee.jshir == jshir)
         result = await session.execute(stmt)
         return result.scalar_one_or_none()
+
+    async def search(
+        self, session: AsyncSession, query: str, limit: int = 20
+    ) -> Sequence[Employee]:
+        """Ищет сотрудника по части ЖШИР или ФИО — так быстрее, чем листать список."""
+        pattern = f"%{query.strip()}%"
+        stmt = (
+            select(Employee)
+            .where(or_(Employee.jshir.ilike(pattern), Employee.full_name.ilike(pattern)))
+            .order_by(Employee.full_name)
+            .limit(limit)
+        )
+        result = await session.execute(stmt)
+        return result.scalars().all()
 
     async def get_by_room(
         self, session: AsyncSession, room_id: int, skip: int = 0, limit: int = 100

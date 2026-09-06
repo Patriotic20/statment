@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react'
-import { Building2, LogIn, Package, UserPlus } from 'lucide-react'
+import { Building2, LogIn, Package, Search, UserPlus, X } from 'lucide-react'
 import { createApi } from '../api/endpoints'
 import { Button } from '../components/ui/Button'
 import { Field, Input, PasswordInput, Select } from '../components/ui/Field'
@@ -40,8 +40,6 @@ export function MiniAppPage() {
   const [busy, setBusy] = useState(false)
 
   const [faculties, setFaculties] = useState<Faculty[]>([])
-  const [rooms, setRooms] = useState<Room[]>([])
-  const [employees, setEmployees] = useState<Employee[]>([])
 
   const api = useMemo(() => createApi({ baseUrl: '/api', token: token ?? undefined }), [token])
   const initData = telegram()?.initData ?? ''
@@ -108,18 +106,6 @@ export function MiniAppPage() {
     if (status === 'ready') loadFaculties()
   }, [status, loadFaculties])
 
-  async function loadRooms(facultyId: string) {
-    if (!facultyId) { setRooms([]); return }
-    const r = await api.listRooms(Number(facultyId))
-    setRooms(r.ok && r.data ? r.data : [])
-  }
-
-  async function loadEmployees(roomId: string) {
-    if (!roomId) { setEmployees([]); return }
-    const r = await api.listEmployees(Number(roomId))
-    setEmployees(r.ok && r.data ? r.data : [])
-  }
-
   function finish(text: string, ok: boolean) {
     setNote({ text, ok })
     telegram()?.HapticFeedback?.notificationOccurred(ok ? 'success' : 'error')
@@ -128,12 +114,32 @@ export function MiniAppPage() {
 
   // ── Формы ──────────────────────────────────────────────────────────────
   const [roomForm, setRoomForm] = useState({ name: '', floor: '1', faculty_id: '' })
-  const [empForm, setEmpForm] = useState({ jshir: '', full_name: '', faculty_id: '', room_id: '' })
-  const [invForm, setInvForm] = useState({
-    name: '', device_type: '', ip_address: '', mac_address: '',
-    faculty_id: '', room_id: '', employee_id: '',
-  })
+  const [empForm, setEmpForm] = useState({ jshir: '', full_name: '' })
+  const [pickedRoom, setPickedRoom] = useState<Room | null>(null)
+  const [invForm, setInvForm] = useState({ name: '', device_type: '', ip_address: '', mac_address: '' })
+  const [pickedEmployee, setPickedEmployee] = useState<Employee | null>(null)
   const [photo, setPhoto] = useState<File | null>(null)
+
+  // Названия кабинетов — чтобы показать, где сидит найденный сотрудник.
+  const [roomNames, setRoomNames] = useState<Record<number, string>>({})
+  useEffect(() => {
+    if (status !== 'ready') return
+    api.listRooms().then((r) => {
+      if (r.ok && r.data) {
+        setRoomNames(Object.fromEntries(r.data.map((room) => [room.id, room.name])))
+      }
+    })
+  }, [status, api])
+
+  const searchEmployees = useCallback(async (q: string) => {
+    const r = q.trim() ? await api.searchEmployees(q.trim()) : await api.listEmployees()
+    return r.ok && r.data ? r.data.slice(0, 20) : []
+  }, [api])
+
+  const searchRooms = useCallback(async (q: string) => {
+    const r = q.trim() ? await api.searchRooms(q.trim()) : await api.listRooms()
+    return r.ok && r.data ? r.data.slice(0, 20) : []
+  }, [api])
 
   async function submitRoom(e: FormEvent) {
     e.preventDefault()
@@ -153,27 +159,28 @@ export function MiniAppPage() {
 
   async function submitEmployee(e: FormEvent) {
     e.preventDefault()
-    if (!empForm.room_id) return finish('Xonani tanlang', false)
+    if (!pickedRoom) return finish('Xonani tanlang', false)
     setBusy(true)
     const r = await api.createEmployee({
       jshir: empForm.jshir.trim(),
       full_name: empForm.full_name.trim(),
-      room_id: Number(empForm.room_id),
+      room_id: pickedRoom.id,
     })
     setBusy(false)
     if (r.ok) {
-      setEmpForm({ jshir: '', full_name: '', faculty_id: '', room_id: '' })
+      setEmpForm({ jshir: '', full_name: '' })
+      setPickedRoom(null)
       finish('✅ Xodim qo\'shildi', true)
     } else finish(errorMessage(r), false)
   }
 
   async function submitInventory(e: FormEvent) {
     e.preventDefault()
-    if (!invForm.employee_id) return finish('Xodimni tanlang', false)
+    if (!pickedEmployee) return finish('Xodimni tanlang', false)
     setBusy(true)
     const r = await api.createInventory({
       name: invForm.name.trim(),
-      employee_id: Number(invForm.employee_id),
+      employee_id: pickedEmployee.id,
       device_type: (invForm.device_type as 'computer' | 'network' | 'printer') || undefined,
       ip_address: invForm.ip_address.trim() || undefined,
       mac_address: invForm.mac_address.trim() || undefined,
@@ -189,7 +196,8 @@ export function MiniAppPage() {
       photoNote = up.ok ? ', rasm yuklandi' : ', ⚠️ rasm yuklanmadi'
     }
     setBusy(false)
-    setInvForm({ name: '', device_type: '', ip_address: '', mac_address: '', faculty_id: '', room_id: '', employee_id: '' })
+    setInvForm({ name: '', device_type: '', ip_address: '', mac_address: '' })
+    setPickedEmployee(null)
     setPhoto(null)
     finish(`✅ Uskuna qo'shildi${photoNote}`, true)
   }
@@ -226,10 +234,6 @@ export function MiniAppPage() {
 
   const facultyOptions = [{ value: '', label: '— fakultet —' },
     ...faculties.map((f) => ({ value: String(f.id), label: f.name }))]
-  const roomOptions = [{ value: '', label: '— xona —' },
-    ...rooms.map((r) => ({ value: String(r.id), label: r.name }))]
-  const employeeOptions = [{ value: '', label: '— xodim —' },
-    ...employees.map((e) => ({ value: String(e.id), label: e.full_name }))]
 
   return (
     <div className="mx-auto max-w-md px-4 py-5 pb-16">
@@ -286,17 +290,16 @@ export function MiniAppPage() {
             <Input value={empForm.full_name} required
               onChange={(e) => setEmpForm({ ...empForm, full_name: e.target.value })} />
           </Field>
-          <Field label="Fakultet">
-            <Select value={empForm.faculty_id} options={facultyOptions}
-              onChange={(e) => {
-                setEmpForm({ ...empForm, faculty_id: e.target.value, room_id: '' })
-                loadRooms(e.target.value)
-              }} />
-          </Field>
-          <Field label="Xona">
-            <Select value={empForm.room_id} options={roomOptions}
-              onChange={(e) => setEmpForm({ ...empForm, room_id: e.target.value })} />
-          </Field>
+          <SearchPicker<Room>
+            label="Xona"
+            placeholder="Xona nomi bo'yicha qidirish"
+            picked={pickedRoom}
+            renderPicked={(r) => `${r.name} · ${r.floor}-qavat`}
+            renderItem={(r) => ({ title: r.name, hint: `${r.floor}-qavat` })}
+            search={searchRooms}
+            onPick={setPickedRoom}
+            onClear={() => setPickedRoom(null)}
+          />
           <Button type="submit" disabled={busy} className="w-full justify-center">Saqlash</Button>
         </form>
       )}
@@ -326,29 +329,96 @@ export function MiniAppPage() {
                 onChange={(e) => setInvForm({ ...invForm, mac_address: e.target.value })} />
             </Field>
           </div>
-          <Field label="Fakultet">
-            <Select value={invForm.faculty_id} options={facultyOptions}
-              onChange={(e) => {
-                setInvForm({ ...invForm, faculty_id: e.target.value, room_id: '', employee_id: '' })
-                setEmployees([])
-                loadRooms(e.target.value)
-              }} />
-          </Field>
-          <Field label="Xona">
-            <Select value={invForm.room_id} options={roomOptions}
-              onChange={(e) => {
-                setInvForm({ ...invForm, room_id: e.target.value, employee_id: '' })
-                loadEmployees(e.target.value)
-              }} />
-          </Field>
-          <Field label="Egasi (xodim)">
-            <Select value={invForm.employee_id} options={employeeOptions}
-              onChange={(e) => setInvForm({ ...invForm, employee_id: e.target.value })} />
-          </Field>
+          <SearchPicker<Employee>
+            label="Egasi (xodim)"
+            placeholder="JShShIR yoki F.I.Sh. bo'yicha qidirish"
+            picked={pickedEmployee}
+            renderPicked={(e) => `${e.full_name} · ${roomNames[e.room_id] ?? '—'}`}
+            renderItem={(e) => ({
+              title: e.full_name,
+              hint: `${e.jshir} · ${roomNames[e.room_id] ?? '—'}`,
+            })}
+            search={searchEmployees}
+            onPick={setPickedEmployee}
+            onClear={() => setPickedEmployee(null)}
+          />
           <Button type="submit" disabled={busy} className="w-full justify-center">Saqlash</Button>
         </form>
       )}
     </div>
+  )
+}
+
+/**
+ * Поле поиска со списком найденного: вводить ЖШИР или название быстрее,
+ * чем листать выпадающий список из сотен позиций.
+ */
+function SearchPicker<T extends { id: number }>({
+  label, placeholder, picked, renderPicked, renderItem, search, onPick, onClear,
+}: {
+  label: string
+  placeholder: string
+  picked: T | null
+  renderPicked: (item: T) => string
+  renderItem: (item: T) => { title: string; hint: string }
+  search: (query: string) => Promise<T[]>
+  onPick: (item: T) => void
+  onClear: () => void
+}) {
+  const [query, setQuery] = useState('')
+  const [items, setItems] = useState<T[]>([])
+  const [searching, setSearching] = useState(false)
+
+  useEffect(() => {
+    if (picked) return
+    let cancelled = false
+    setSearching(true)
+    // Небольшая задержка: не дёргаем сервер на каждой набранной цифре.
+    const t = setTimeout(async () => {
+      const found = await search(query)
+      if (!cancelled) { setItems(found); setSearching(false) }
+    }, 300)
+    return () => { cancelled = true; clearTimeout(t) }
+  }, [query, picked, search])
+
+  if (picked) {
+    return (
+      <Field label={label}>
+        <div className="flex items-center justify-between gap-2 rounded-input border border-border bg-surface px-3 py-2">
+          <span className="min-w-0 truncate text-sm text-ink">{renderPicked(picked)}</span>
+          <button type="button" onClick={onClear} aria-label="O'zgartirish"
+            className="shrink-0 rounded p-1 text-tertiary hover:text-danger">
+            <X size={16} />
+          </button>
+        </div>
+      </Field>
+    )
+  }
+
+  return (
+    <Field label={label}>
+      <div className="relative">
+        <Search size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-tertiary" />
+        <Input value={query} placeholder={placeholder} className="pl-9"
+          onChange={(e) => setQuery(e.target.value)} />
+      </div>
+      <div className="mt-2 max-h-56 space-y-1 overflow-y-auto">
+        {searching && <p className="px-1 py-2 text-xs text-tertiary">Qidirilmoqda…</p>}
+        {!searching && items.length === 0 && (
+          <p className="px-1 py-2 text-xs text-tertiary">Hech narsa topilmadi</p>
+        )}
+        {items.map((item) => {
+          const { title, hint } = renderItem(item)
+          return (
+            <button key={item.id} type="button" onClick={() => onPick(item)}
+              className="block w-full rounded-input border border-border bg-surface px-3 py-2 text-left active:bg-canvas-soft">
+              <span className="block truncate text-sm text-ink">{title}</span>
+              <span className="block truncate font-mono text-xs text-tertiary">{hint}</span>
+            </button>
+          )
+        })}
+      </div>
+    </Field>
   )
 }
 
